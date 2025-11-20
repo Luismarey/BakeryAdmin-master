@@ -4,7 +4,7 @@ namespace BakeryAdmin.Models
     {
         public int DireccionId { get; set; }
         public int PersonaId { get; set; }
-        public Persona Persona { get; set; } = null!;
+        public PersonaBase Persona { get; set; } = null!;
         public string? Zona { get; set; }
         public string? Calle { get; set; }
         public string? Numero { get; set; }

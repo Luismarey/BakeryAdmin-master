@@ -1,6 +1,9 @@
 using BakeryAdmin.Data;
 using BakeryAdmin.Models;
 using BakeryAdmin.Services;
+using System;
+
+using static BakeryAdmin.Models.Enums;
 
 namespace BakeryAdmin.Services
 {
@@ -16,23 +19,29 @@ namespace BakeryAdmin.Services
         // Método para crear una nueva orden
         public Orden CrearOrden(Orden orden)
         {
-            orden.Total = orden.Items.Sum(item => item.PrecioUnitario * item.Cantidad);
+            orden.Total = orden.Items?.Sum(item => item.PrecioUnitario * item.Cantidad) ?? 0;
             orden.TotalDescuento = 0;
 
             IFormaDePago procesador;
 
-            switch (orden.MetodoDePago)
+            switch (orden.MetodoPago)
             {
-                case MetodoDePago.Efectivo:
+                case MetodoPago.Efectivo:
                     procesador = new PagoEfectivo();
                     break;
                
-                case MetodoDePago.Tarjeta:
-                    procesador = new PagoTarjeta();
+                case MetodoPago.Qr:
+                    procesador = new PagoQR();
                     break;
                 default:
                     throw new NotSupportedException("Forma de pago no soportada.");
             }
+            orden.GranTotal = procesador.ProcesarPago(orden.Total - orden.TotalDescuento);
+
+            //Logica de persistencia
+            _dbContext.Ordenes.Add(orden);
+            _dbContext.SaveChanges();
+
             return orden;
         }
     }

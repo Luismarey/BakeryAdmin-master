@@ -47,7 +47,7 @@ namespace BakeryAdmin.Controllers
                 _db.Personas.Add(model);
                 await _db.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "El registro se guardó correctamente.";
+                TempData["SuccessMessage"] = "El registro se guardï¿½ correctamente.";
                 return RedirectToAction("Edit", new { id = model.PersonaId });
             }
 
@@ -74,7 +74,7 @@ namespace BakeryAdmin.Controllers
             if (!ModelState.IsValid) return View(model);
             _db.Personas.Update(model);
             await _db.SaveChangesAsync();
-            TempData["SuccessMessage"] = "El registro se guardó correctamente.";
+            TempData["SuccessMessage"] = "El registro se guardï¿½ correctamente.";
             ViewBag.TiposPersona = CargarTipos();
             return RedirectToAction("Edit", new { id = model.PersonaId });
         }

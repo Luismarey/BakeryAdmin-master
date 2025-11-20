@@ -1,5 +1,6 @@
 using BakeryAdmin.Data;
 using BakeryAdmin.Models;
+using BakeryAdmin.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -20,6 +21,8 @@ builder.Services.AddControllersWithViews()
     {
         options.HtmlHelperOptions.ClientValidationEnabled = true;
     });
+    
+builder.Services.AddScoped<IOrdenesService, OrdenesService>();
 
 builder.WebHost.UseStaticWebAssets();
 

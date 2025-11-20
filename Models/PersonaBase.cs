@@ -3,10 +3,6 @@ using static BakeryAdmin.Models.Enums;
 
 namespace BakeryAdmin.Models
 {
-    /// <summary>
-    /// Clase abstracta base que contiene los atributos comunes para cualquier persona en el sistema.
-    /// Esto demuestra los principios de ABSTRACCIÓN y HERENCIA.
-    /// </summary>
     public class PersonaBase 
     {
         // 1. ATRIBUTOS
@@ -45,10 +41,6 @@ namespace BakeryAdmin.Models
 
 
         // 2. CONSTRUCTOR
-
-        /// <summary>
-        /// Constructor para forzar la inicialización de las propiedades obligatorias al crear el objeto.
-        /// </summary>
         public PersonaBase(string nombres, string apellidos, string numCelular) 
         {
             this.Nombres = nombres;

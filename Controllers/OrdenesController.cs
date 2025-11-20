@@ -1,18 +1,25 @@
-using BakeryAdmin.Data;
 using BakeryAdmin.Models;
+using BakeryAdmin.Data;
+using BakeryAdmin.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using static BakeryAdmin.Models.Enums;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BakeryAdmin.Controllers
 {
     public class OrdenesController : Controller
     {
+        private readonly IOrdenesService _ordenesServices;
         private readonly AppDbContext _db;
 
-        public OrdenesController(AppDbContext db)
-        { _db = db; }
+        public OrdenesController(AppDbContext db, IOrdenesService ordenesService)
+        { 
+            _db = db;
+            _ordenesServices = ordenesService; 
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -81,13 +88,20 @@ namespace BakeryAdmin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Ordenes.Add(model);
-                await _db.SaveChangesAsync();
-                TempData["SuccessMessage"] = "El registro se guardó correctamente.";
-                return RedirectToAction("Edit", new { id = model.OrdenId });
-            }
+                try { 
+                    var nuevaOrden = _ordenesServices.CrearOrden(model);
+                    TempData["SuccessMessage"] = "La Orden se guardo exitosamente.";
+                    return RedirectToAction("Edit", new { id = nuevaOrden.OrdenId });
+                }
 
-            CargarViewBags();
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+
+            };
+
+            CargarViewBags(); 
 
             return View(model);
         }
@@ -111,7 +125,7 @@ namespace BakeryAdmin.Controllers
             model.Total = model.Items?.Sum(i => i.PrecioUnitario * i.Cantidad) ?? 0;
             _db.Ordenes.Update(model);
             await _db.SaveChangesAsync();
-            TempData["SuccessMessage"] = "El registro se guardó correctamente.";
+            TempData["SuccessMessage"] = "El registro se guardï¿½ correctamente.";
             CargarViewBags();
             return RedirectToAction("Edit", new { id = model.OrdenId });
         }
@@ -195,7 +209,7 @@ namespace BakeryAdmin.Controllers
         public IActionResult AgregarProducto(OrdenItem model)
         {
             if (!ModelState.IsValid)
-                return BadRequest("Datos inválidos");
+                return BadRequest("Datos invalidos");
 
             // Guardar en base de datos
             model.Subtotal = model.PrecioUnitario * model.Cantidad;
