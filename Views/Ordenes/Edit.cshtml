@@ -1,0 +1,243 @@
+@model BakeryAdmin.Models.Orden
+@{
+    ViewData["Title"] = "Editar Orden";
+}
+
+<h2 class="mb-4">Editar Orden</h2>
+
+<form id="ordenForm" asp-action="Edit" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="OrdenId" />
+
+    <!-- Datos de la Orden -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select asp-for="PersonaId" class="form-select" asp-items="ViewBag.Clientes" required>
+                    <option value="">-- Selecciona un Cliente --</option>
+                </select>
+                <label asp-for="PersonaId">Cliente</label>
+                <span asp-validation-for="PersonaId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="FechaOrden" type="text" class="form-control" id="FechaOrden" value="@(Model.FechaOrden.ToString("yyyy-MM-dd"))" placeholder="Fecha de Orden (yyyy-MM-dd)" />
+                <label asp-for="FechaOrden">Fecha de Orden (yyyy-MM-dd)</label>
+                <span asp-validation-for="FechaOrden" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select asp-for="EstadoOrden" class="form-select" asp-items="ViewBag.EstadoOrden" required>
+                    <option value="">-- Selecciona Estado Orden --</option>
+                </select>
+                <label asp-for="EstadoOrden">Tipo Orden</label>
+                <span asp-validation-for="EstadoOrden" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select asp-for="MetodoPago" class="form-select" asp-items="ViewBag.MetodoPago" required>
+                    <option value="">-- Selecciona Metodo Pago --</option>
+                </select>
+                <label asp-for="MetodoPago">Metodo Pago</label>
+                <span asp-validation-for="MetodoPago" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-12">
+            <div class="form-floating">
+                <input asp-for="Nota" class="form-control" maxlength="15" placeholder="Nota" />
+                <label asp-for="Nota">Nota</label>
+                <span asp-validation-for="Nota" class="text-danger"></span>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="TotalDescuento" class="form-control" maxlength="15" placeholder="Total Descuento" readonly />
+                <label asp-for="TotalDescuento">Total Descuento</label>
+                <span asp-validation-for="TotalDescuento" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Total" class="form-control" maxlength="15" placeholder="Total" readonly />
+                <label asp-for="Total">Total</label>
+                <span asp-validation-for="Total" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de productos -->
+    <div class="mb-3">
+        <label class="form-label">Productos asociados</label>
+        <div id="listaProductos">
+            <partial name="_ListaProductos" model="Model.Items" />
+        </div>
+    </div>
+
+    <!-- Botón Agregar Item -->
+    <button type="button" id="btnAgregarOrdenItem" class="btn btn-primary mb-3">
+        <i class="fa fa-plus"></i> Agregar Item
+    </button>
+
+    <!-- Botones de la Orden -->
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Guardar Cambios
+        </button>
+        <a href="/Ordenes" class="btn btn-secondary">
+            <i class="fa fa-times"></i> Cancelar
+        </a>
+    </div>
+</form>
+
+<!-- Modal para agregar Item -->
+<div id="ordenItemsContainer">
+    @await Html.PartialAsync("_ProductosModal", new BakeryAdmin.Models.OrdenItem { OrdenId = Model.OrdenId })
+</div>
+
+<!-- Modal para editar Item -->
+<div class="modal fade" id="modalItem" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Partial _EditItemModal se cargará aquí -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Inicializar datepicker
+        $(function () {
+            $('#FechaOrden').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+
+        // Guardar la Orden principal
+        $('#ordenForm').on('submit', function(e) {
+            e.preventDefault();
+            var form = this;
+            if (!form.checkValidity()) {
+                $(form).addClass('was-validated');
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Deseas guardar este registro?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        // Abrir modal Agregar Item
+        $('#btnAgregarOrdenItem').on('click', function() {
+            var modal = new bootstrap.Modal(document.getElementById('productosModal'));
+            modal.show();
+        });
+
+        // Agregar Item por AJAX
+        $(document).on('submit', '#productoForm', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '@Url.Action("AgregarProducto", "Ordenes")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(partialViewResult) {
+                    $('#listaProductos').html(partialViewResult);
+                    var modalEl = document.getElementById('productosModal');
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.hide();
+                    $('#productoForm')[0].reset();
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    alert('Error al guardar el item.');
+                }
+            });
+        });
+
+        // Editar Item (cargar partial en modal)
+        $(document).on('click', '.btn-edit', function() {
+            let id = $(this).data('id');
+            fetch(`/Ordenes/EditItem/${id}`)
+                .then(r => r.text())
+                .then(html => {
+                    $('#modalItem .modal-content').html(html);
+                    var modal = new bootstrap.Modal(document.getElementById('modalItem'));
+                    modal.show();
+                });
+        });
+
+        // Guardar Item editado
+        $(document).on('submit', '#editItemForm', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '@Url.Action("EditarProducto", "Ordenes")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(partialViewResult) {
+                    $('#listaProductos').html(partialViewResult);
+                    var modalEl = document.getElementById('modalItem');
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.hide();
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    alert('Error al guardar el item editado.');
+                }
+            });
+        });
+
+        // Eliminar Item
+        $(document).on('click', '.btn-delete', function() {
+            let id = $(this).data('id');
+            let tr = $(this).closest('tr');
+
+            Swal.fire({
+                title: "¿Eliminar registro?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/Ordenes/DeleteItemConfirmed/${id}`, { method: 'POST' })
+                        .then(r => r.json())
+                        .then(res => {
+                            if (res.success) {
+                                tr.remove();
+                                Swal.fire("Eliminado", "El item fue eliminado.", "success");
+                            } else {
+                                Swal.fire("Error", res.message, "error");
+                            }
+                        });
+                }
+            });
+        });
+    </script>
+}

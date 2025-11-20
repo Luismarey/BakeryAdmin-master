@@ -1,0 +1,75 @@
+﻿@model BakeryAdmin.Models.OrdenItem
+
+<div class="modal-header">
+    <h5 class="modal-title">Editar Item</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<form id="editItemForm" method="post">
+    <div class="modal-body">
+        <input type="hidden" asp-for="OrdenItemId" />
+
+        <div class="mb-3">
+            <label class="form-label">Producto</label>
+            <select asp-for="ProductoId" class="form-select">
+                @foreach (var p in ViewBag.Productos as List<BakeryAdmin.Models.Producto>)
+                {
+                    <option value="@p.ProductoId" selected="@(Model.ProductoId == p.ProductoId)">
+                        @p.Nombre
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input asp-for="Cantidad" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Precio Unitario</label>
+            <input asp-for="PrecioUnitario" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Descuento</label>
+            <input asp-for="Descuento" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Subtotal</label>
+            <input asp-for="Subtotal" class="form-control" readonly />
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </div>
+</form>
+
+<script>
+    // Guardar Item editado por AJAX
+    $(document).on("submit", "#editItemForm", function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '@Url.Action("EditarProducto", "Ordenes")',
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(partialViewResult) {
+                // Actualizar tabla de productos
+                $("#listaProductos").html(partialViewResult);
+
+                // Cerrar modal
+                var modalEl = document.getElementById("modalItem");
+                var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modal.hide();
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+                alert("Error al guardar el item editado.");
+            }
+        });
+    });
+</script>

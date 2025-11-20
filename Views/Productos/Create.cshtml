@@ -1,0 +1,158 @@
+@model BakeryAdmin.Models.Producto
+@{
+    ViewData["Title"] = "Nuevo Producto";
+}
+
+<h2 class="mb-4">Nuevo Producto</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+
+    @Html.AntiForgeryToken()
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Nombre" class="form-control" maxlength="40" placeholder="Nombre" required />
+                <label asp-for="Nombre">Nombre</label>
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Categoria" class="form-control" maxlength="40" placeholder="Categoria" required />
+                <label asp-for="Categoria">Categoria</label>
+                <span asp-validation-for="Categoria" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fila: Email y Móvil -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Descripcion" class="form-control" maxlength="150" placeholder="Descripcion" required />
+                <label asp-for="Descripcion">Descripcion</label>
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Precio" type="text" class="form-control" placeholder="Precio" required id="Precio" />
+                <label asp-for="Precio">Precio</label>
+                <label asp-for="Precio">Precio</label>
+                <span asp-validation-for="Precio" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información adicional en card -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+            Información adicional
+        </div>
+        <div class="card-body">
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="Fotografia" type="file" class="form-control" accept="image/*" />
+                        <label asp-for="Fotografia">Fotografía</label>
+                        <span asp-validation-for="Fotografia" class="text-danger"></span>
+
+                        @if (Model?.Fotografia != null)
+                        {
+                            <div class="mb-3">
+                                <img src="~/uploads/@Model.Fotografia" alt="Fotografía" class="img-thumbnail" style="max-width:200px;" />
+                            </div>
+                        }
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="Unidad" type="text" class="form-control" maxlength="20" placeholder="Unidad" />
+                        <label asp-for="Unidad">Unidad</label>
+                        <span asp-validation-for="Unidad" class="text-danger"></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input asp-for="Disponible" class="form-check-input" type="checkbox" id="Disponible" />
+                <label asp-for="Disponible" class="form-check-label">Disponible</label>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Guardar
+        </button>
+        <a href="/Productos" class="btn btn-secondary">
+            <i class="fa fa-times"></i> Cancelar
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const inputPrecio = document.getElementById('Precio');
+
+        inputPrecio.addEventListener('input', function() {
+            let valor = this.value;
+
+            // Solo dígitos y un punto decimal
+            valor = valor.replace(/[^0-9.]/g, '');
+
+            // Permitir solo un punto
+            const parts = valor.split('.');
+            if (parts.length > 2) {
+                valor = parts[0] + '.' + parts[1];
+            }
+
+            // Limitar a máximo 2 decimales
+            if (parts[1]) {
+                parts[1] = parts[1].substring(0, 2);
+                valor = parts[0] + '.' + parts[1];
+            }
+
+            this.value = valor;
+        });
+
+
+
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+
+                    event.preventDefault();
+
+                    if (!form.checkValidity()) {
+                        event.stopPropagation();
+                        form.classList.add('was-validated');
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: '¿Deseas guardar este registro?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, guardar',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }, false);
+            });
+        })();
+    </script>
+}

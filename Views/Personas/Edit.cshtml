@@ -1,0 +1,198 @@
+@model BakeryAdmin.Models.Persona
+@{
+    ViewData["Title"] = "Editar Persona";
+}
+
+<h2 class="mb-4">Editar Persona</h2>
+
+<form asp-action="Edit" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PersonaId" />
+
+    <!-- Fila principal: Nombre y Apellido -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Nombres" class="form-control" maxlength="40" placeholder="Nombres" required />
+                <label asp-for="Nombres">Nombre</label>
+                <span asp-validation-for="Nombres" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Apellidos" class="form-control" maxlength="40" placeholder="Apellidos" required />
+                <label asp-for="Apellidos">Apellido</label>
+                <span asp-validation-for="Apellidos" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fila: Email y Móvil -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Correo_Electronico" class="form-control" placeholder="Email" required />
+                <label asp-for="Correo_Electronico">Email</label>
+                <span asp-validation-for="Correo_Electronico" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="NumCelular" class="form-control" maxlength="15" inputmode="numeric" placeholder="Móvil" required />
+                <label asp-for="NumCelular">Móvil</label>
+                <span asp-validation-for="NumCelular" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select asp-for="TipoPersona" class="form-select" asp-items="ViewBag.TiposPersona" required>
+                    <option value="">-- Selecciona Tipo Persona --</option>
+                </select>
+                <label asp-for="TipoPersona">Tipo Persona</label>
+                <span asp-validation-for="TipoPersona" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información adicional en card -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+            Información adicional
+        </div>
+        <div class="card-body">
+
+            <!-- Fila: CI y Shift -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="NumCi" class="form-control" maxlength="15" placeholder="CI" />
+                        <label asp-for="NumCi">CI</label>
+                        <span asp-validation-for="NumCi" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="Fecha_Nacimiento" type="text" class="form-control" id="BirthDate" value="@(Model.Fecha_Nacimiento?.ToString("yyyy-MM-dd"))" placeholder="Fecha de Nacimiento (yyyy-MM-dd)" />
+                        <label asp-for="Fecha_Nacimiento">Fecha de Nacimiento (yyyy-MM-dd)</label>
+                        <span asp-validation-for="Fecha_Nacimiento" class="text-danger"></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="Profesion" class="form-control" maxlength="40" placeholder="Profesión" />
+                        <label asp-for="Profesion">Profesión</label>
+                        <span asp-validation-for="Profesion" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="Turno" class="form-control" maxlength="10" placeholder="Turno" />
+                        <label asp-for="Turno">Turno</label>
+                        <span asp-validation-for="Turno" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="Numero_Licencia" class="form-control" maxlength="15" placeholder="Número de Licencia" />
+                        <label asp-for="Numero_Licencia">Número de Licencia</label>
+                        <span asp-validation-for="Numero_Licencia" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="Categoria_Licencia" class="form-control" maxlength="2" placeholder="Categoría de Licencia" />
+                        <label asp-for="Categoria_Licencia">Categoría de Licencia</label>
+                        <span asp-validation-for="Categoria_Licencia" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input asp-for="Mobilidad" class="form-check-input" type="checkbox" id="Mobility" />
+                <label asp-for="Mobilidad" class="form-check-label">Movilidad</label>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Direcciones -->
+    <div class="mb-3">
+        <label class="form-label">Direcciones asociadas</label>
+        <div id="listaDirecciones">
+            <partial name="_ListaDirecciones" model="Model.Direcciones" />
+        </div>
+    </div>
+
+    <button type="button" id="btnAgregarDireccion" class="btn btn-primary mb-3">
+        <i class="fa fa-plus"></i> Agregar Dirección
+    </button>
+
+    <!-- Botones -->
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Guardar Cambios
+        </button>
+        <a href="/Personas" class="btn btn-secondary">
+            <i class="fa fa-times"></i> Cancelar
+        </a>
+    </div>
+</form>
+
+<div>
+    @await Html.PartialAsync("_DireccionesModal", new BakeryAdmin.Models.Direccion { PersonaId = Model.PersonaId })
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            // Inicializar datepicker
+            $('#BirthDate').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+
+            $('form.needs-validation').off('submit').on('submit', function(e) {
+
+                e.preventDefault();
+
+                var form = this;
+                if (!form.checkValidity()) {
+                    $(form).addClass('was-validated');
+                    return;
+                }
+
+                Swal.fire({
+                    title: '¿Deseas guardar este registro?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(form).off('submit');
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+}
+

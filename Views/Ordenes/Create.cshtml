@@ -1,0 +1,137 @@
+@model BakeryAdmin.Models.Orden
+@{
+    ViewData["Title"] = "Nueva Orden";
+}
+
+<h2 class="mb-4">Nueva Orden</h2>
+
+<form asp-action="Create" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select asp-for="PersonaId" class="form-select" asp-items="ViewBag.Clientes" required>
+                    <option value="">-- Selecciona un Cliente --</option>
+                </select>
+                <label asp-for="PersonaId">Cliente</label>
+                <span asp-validation-for="PersonaId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="FechaOrden" type="text" class="form-control" id="FechaOrden" placeholder="Fecha de Orden (yyyy-MM-dd)" />
+                <label asp-for="FechaOrden">Fecha de Orden (yyyy-MM-dd)</label>
+                <span asp-validation-for="FechaOrden" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select asp-for="EstadoOrden" class="form-select" asp-items="ViewBag.EstadoOrden" required>
+                    <option value="">-- Selecciona Estado Orden --</option>
+                </select>
+                <label asp-for="EstadoOrden">Tipo Orden</label>
+                <span asp-validation-for="EstadoOrden" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Nota" class="form-control" maxlength="15" placeholder="Nota" required />
+                <label asp-for="Nota">Nota</label>
+                <span asp-validation-for="Nota" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select asp-for="MetodoPago" class="form-select" asp-items="ViewBag.MetodoPago" required>
+                    <option value="">-- Selecciona Metodo Pago --</option>
+                </select>
+                <label asp-for="MetodoPago">Metodo Pago</label>
+                <span asp-validation-for="MetodoPago" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Total" class="form-control" maxlength="15" placeholder="Total" />
+                <label asp-for="Total">Total</label>
+                <span asp-validation-for="Total" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="TotalDescuento" class="form-control" maxlength="15" placeholder="Total Descuento" />
+                <label asp-for="TotalDescuento">Total Descuento</label>
+                <span asp-validation-for="TotalDescuento" class="text-danger"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="alert alert-warning mt-3">
+        <strong>Nota:</strong> Primero guarda la orden para poder agregar productos.
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Guardar
+        </button>
+        <a href="/Ordenes" class="btn btn-secondary">
+            <i class="fa fa-times"></i> Cancelar
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            // Inicializar datepicker
+            $('#FechaOrden').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+
+                    event.preventDefault();
+
+                    if (!form.checkValidity()) {
+                        event.stopPropagation();
+                        form.classList.add('was-validated');
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: '¿Deseas guardar este registro?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, guardar',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }, false);
+            });
+        })();
+
+    </script>
+}

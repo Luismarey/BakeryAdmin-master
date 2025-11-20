@@ -1,0 +1,54 @@
+@model BakeryAdmin.Models.Producto
+@{
+    ViewData["Title"] = "Detalle de Producto";
+}
+
+<div class="container mt-4">
+
+    <!-- Card principal -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3 class="card-title mb-1">@Model.Nombre</h3>
+
+            <hr />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Categoria:</strong> <br /> @Model.Categoria
+                </div>
+                <div class="col-md-6">
+                    <strong>Descripcion:</strong> <br /> @Model.Descripcion
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Fotografia:</strong> <br />
+                    <img src="~/uploads/@Model.Fotografia" class="img-thumbnail" style="max-width:200px;" />
+                </div>
+                <div class="col-md-6">
+                    <strong>Unidad:</strong> <br /> @Model.Unidad
+                </div>
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+                    <strong>Disponible:</strong> <br /> @(Model.Disponible ? "Sí" : "No")
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="/Productos">
+            <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+        <a class="btn btn-primary" href="/Productos/Edit/@Model.ProductoId">
+            <i class="fa-solid fa-pen-to-square"></i> Editar
+        </a>
+    </div>
+
+</div>

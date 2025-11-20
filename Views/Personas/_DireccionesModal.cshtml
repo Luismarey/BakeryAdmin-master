@@ -1,0 +1,76 @@
+﻿@model BakeryAdmin.Models.Direccion
+
+<div class="modal fade" id="direccionesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title">Administrar Dirección</h5>
+                <label>@Model.PersonaId</label>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="direccionForm" method="post" class="needs-validation" novalidate>
+                    <!-- Campos ocultos -->
+                    <input asp-for="@Model.DireccionId" type="hidden" />
+                    <input asp-for="@Model.PersonaId" type="hidden" />
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Zona" class="form-control" name="Zona" placeholder="Zona" required />
+                                <label asp-for="Zona">Zona</label>
+                                <span asp-validation-for="Zona" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Calle" class="form-control" name="Calle" placeholder="Calle" required />
+                                <label asp-for="Calle">Calle</label>
+                                <span asp-validation-for="Calle" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-for="Numero" class="form-control" name="Numero" placeholder="Número" required />
+                                <label asp-for="Numero">Número</label>
+                                <span asp-validation-for="Numero" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-for="NombreEdificio" class="form-control" name="NombreEdificio" placeholder="Nombre del edificio" />
+                                <label asp-for="NombreEdificio">Nombre del edificio</label>
+                                <span asp-validation-for="NombreEdificio" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-for="Referencia" class="form-control" name="Referencia" placeholder="Referencia" />
+                                <label asp-for="Referencia">Referencia</label>
+                                <span asp-validation-for="Referencia" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input asp-for="Activo" class="form-check-input" type="checkbox" />
+                        <label asp-for="Activo" class="form-check-label">Activo</label>
+                        <span asp-validation-for="Activo" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" id="btnGuardarDireccion" class="btn btn-primary">
+                            <i class="fa fa-save"></i> Guardar
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

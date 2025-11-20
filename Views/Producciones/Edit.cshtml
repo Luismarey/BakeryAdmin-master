@@ -1,0 +1,120 @@
+@model BakeryAdmin.Models.Produccion
+@{
+    ViewData["Title"] = "Editar Produccion";
+}
+
+<h2 class="mb-4">Editar Produccion</h2>
+
+<form asp-action="Edit" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ProduccionId" />
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select asp-for="ProductoId" class="form-select" asp-items="ViewBag.Productos" required>
+                    <option value="">-- Selecciona un Producto --</option>
+                </select>
+                <label asp-for="ProductoId">Producto</label>
+                <span asp-validation-for="ProductoId" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="FechaProduccion" type="text" class="form-control" id="FechaProduccion" value="@(Model.FechaProduccion.ToString("yyyy-MM-dd"))" placeholder="Fecha Produccion (yyyy-MM-dd)" required />
+                <label asp-for="FechaProduccion">Fecha de Produccion (yyyy-MM-dd)</label>
+                <span asp-validation-for="FechaProduccion" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="FechaVencimiento" type="text" class="form-control" id="FechaVencimiento" value="@(Model.FechaVencimiento.ToString("yyyy-MM-dd"))" placeholder="Fecha de Vencimiento (yyyy-MM-dd)" required />
+                <label asp-for="FechaVencimiento">Fecha de Vencimiento (yyyy-MM-dd)</label>
+                <span asp-validation-for="FechaVencimiento" class="text-danger"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-3 mb-3">
+
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="CantidadProducida" class="form-control" placeholder="Cantidad Producida" required />
+                <label asp-for="CantidadProducida">Cantidad Producida</label>
+                <span asp-validation-for="CantidadProducida" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="NumeroLote" class="form-control" placeholder="Numero Lote" required />
+                <label asp-for="NumeroLote">Numero Lote</label>
+                <span asp-validation-for="NumeroLote" class="text-danger"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Guardar Cambios
+        </button>
+        <a href="/Producciones" class="btn btn-secondary">
+            <i class="fa fa-times"></i> Cancelar
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            // Inicializar datepicker
+            $('#FechaProduccion').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $('#FechaVencimiento').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+
+            $('form.needs-validation').off('submit').on('submit', function(e) {
+
+                e.preventDefault();
+
+                var form = this;
+                if (!form.checkValidity()) {
+                    $(form).addClass('was-validated');
+                    return;
+                }
+
+                Swal.fire({
+                    title: '¿Deseas guardar este registro?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(form).off('submit');
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+}
+

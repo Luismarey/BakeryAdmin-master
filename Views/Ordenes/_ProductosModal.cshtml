@@ -1,0 +1,72 @@
+﻿@model BakeryAdmin.Models.OrdenItem
+
+<div class="modal fade" id="productosModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title">Administrar Producto</h5>
+                <label>@Model.OrdenItemId</label>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productoForm" method="post" novalidate>
+                    <!-- Campos ocultos -->
+                    
+                    <input asp-for="@Model.OrdenId" type="hidden" />
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select asp-for="ProductoId" class="form-select" asp-items="ViewBag.Productos" required>
+                                    <option value="">-- Selecciona un Producto --</option>
+                                </select>
+                                <label asp-for="ProductoId">Producto</label>
+                                <span asp-validation-for="ProductoId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Cantidad" class="form-control" name="Cantidad" placeholder="Cantidad" required />
+                                <label asp-for="Cantidad">Cantidad</label>
+                                <span asp-validation-for="Cantidad" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-for="PrecioUnitario" class="form-control" name="PrecioUnitario" placeholder="Precio Unitario" required />
+                                <label asp-for="PrecioUnitario">Precio Unitario</label>
+                                <span asp-validation-for="PrecioUnitario" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-for="Descuento" class="form-control" name="Descuento" placeholder="Descuento" />
+                                <label asp-for="Descuento">Descuento</label>
+                                <span asp-validation-for="Descuento" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-for="Subtotal" class="form-control" name="Subtotal" placeholder="Sub total" required />
+                                <label asp-for="Subtotal">Sub total</label>
+                                <span asp-validation-for="Subtotal" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" id="btnGuardarProducto" class="btn btn-primary">
+                            <i class="fa fa-save"></i> Guardar
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

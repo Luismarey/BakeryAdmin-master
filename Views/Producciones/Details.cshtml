@@ -1,0 +1,54 @@
+@model BakeryAdmin.Models.Produccion
+@{
+    ViewData["Title"] = "Detalle de Produccion";
+}
+
+<div class="container mt-4">
+
+    <!-- Card principal -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3 class="card-title mb-1">@Model.Producto?.Nombre</h3>
+
+            <hr />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Fecha de Producción:</strong> <br /> @(Model.FechaProduccion.ToString("yyyy-MM-dd"))
+                </div>
+                <div class="col-md-6">
+                    <strong>Fecha de Vencimiento:</strong> <br /> @(Model.FechaVencimiento.ToString("yyyy-MM-dd"))
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Cantidad Producida:</strong> <br /> @Model.CantidadProducida
+                </div>
+                <div class="col-md-6">
+                    <strong>Cantidad Disponible:</strong> <br /> @Model.CantidadDisponible
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Número de Lote:</strong> <br /> @Model.NumeroLote
+                </div>
+                <div class="col-md-6">
+                    <strong>Dias validos:</strong> <br /> @Model.DiasValidos
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="/Producciones">
+            <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+        <a class="btn btn-primary" href="/Producciones/Edit/@Model.ProduccionId">
+            <i class="fa-solid fa-pen-to-square"></i> Editar
+        </a>
+    </div>
+
+</div>
