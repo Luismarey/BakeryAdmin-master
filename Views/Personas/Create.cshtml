@@ -1,4 +1,7 @@
-@model BakeryAdmin.Models.PersonaBase
+@model BakeryAdmin.Models.Empleado
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using static BakeryAdmin.Models.Enums
+
 @{
     ViewData["Title"] = "Nueva Persona";
 }
@@ -8,7 +11,6 @@
 <form asp-action="Create" method="post" class="needs-validation" novalidate>
     @Html.AntiForgeryToken()
 
-    <!-- Fila principal: Nombre y Apellido -->
     <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="form-floating">
@@ -25,168 +27,193 @@
             </div>
         </div>
     </div>
-
-    <!-- Fila: Email y Móvil -->
+    
     <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="form-floating">
-                <input asp-for="Correo_Electronico" class="form-control" placeholder="Email" required />
+                <select asp-for="TipoPersona" id="TipoSeleccionado" class="form-control" required 
+                        onchange="mostrarCamposPorTipo()" asp-items="Html.GetEnumSelectList<TipoPersona>()"> 
+                    <option value="">-- Seleccione Tipo --</option>
+                </select>
+                <label asp-for="TipoPersona">Tipo de Persona</label>
+                <span asp-validation-for="TipoPersona" class="text-danger"></span>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="NumCi" class="form-control" maxlength="15" placeholder="Carnet de Identidad" />
+                <label asp-for="NumCi">C.I. (Opcional)</label>
+                <span asp-validation-for="NumCi" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="campos-empleado" style="display:none;"> 
+        <h5 class="mt-4">Datos Específicos del Empleado</h5>
+        
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input asp-for="Profesion" class="form-control" maxlength="40" placeholder="Profesión" />
+                    <label asp-for="Profesion">Profesión</label>
+                    <span asp-validation-for="Profesion" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input asp-for="Numero_Licencia" class="form-control" maxlength="15" placeholder="Número de Licencia" />
+                    <label asp-for="Numero_Licencia">N° Licencia</label>
+                    <span asp-validation-for="Numero_Licencia" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="form-floating">
+                    <input asp-for="Categoria_Licencia" class="form-control" maxlength="2" placeholder="Categoría de Licencia" />
+                    <label asp-for="Categoria_Licencia">Cat. Licencia</label>
+                    <span asp-validation-for="Categoria_Licencia" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="form-floating">
+                    <input asp-for="Turno" class="form-control" maxlength="10" placeholder="Turno" />
+                    <label asp-for="Turno">Turno</label>
+                    <span asp-validation-for="Turno" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="col-md-4 d-flex align-items-center">
+                <div class="form-check">
+                    <input asp-for="Mobilidad" class="form-check-input" type="checkbox" id="Mobilidad" />
+                    <label class="form-check-label" for="Mobilidad">
+                        Con Movilidad Propia
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="Correo_Electronico" class="form-control" placeholder="Correo_Electronico" />
                 <label asp-for="Correo_Electronico">Email</label>
                 <span asp-validation-for="Correo_Electronico" class="text-danger"></span>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-floating">
-                <input asp-for="NumCelular" class="form-control" maxlength="15" inputmode="numeric" placeholder="Móvil" required />
+                <input asp-for="NumCelular" class="form-control" maxlength="15" placeholder="NumCelular" required />
                 <label asp-for="NumCelular">Móvil</label>
                 <span asp-validation-for="NumCelular" class="text-danger"></span>
             </div>
         </div>
     </div>
 
+    <h5 class="mt-4">Dirección</h5>
+    <div class="row g-3 mb-3">
+        <div class="col-12">
+            <input type="hidden" asp-for="PersonaId" />
+            <input type="hidden" id="numDirecciones" />
+            <table class="table table-bordered table-striped" id="tablaDirecciones">
+                <thead>
+                    <tr>
+                        <th>Zona</th>
+                        <th>Calle</th>
+                        <th>Número</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#direccionesModal">Agregar Dirección</button>
+        </div>
+    </div>
+
     <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="form-floating">
-                <select asp-for="TipoPersona" class="form-select" asp-items="ViewBag.TiposPersona" required>
-                    <option value="">-- Selecciona Tipo Persona --</option>
-                </select>
-                <label asp-for="TipoPersona">Tipo Persona</label>
-                <span asp-validation-for="TipoPersona" class="text-danger"></span>
+                <input asp-for="Fecha_Nacimiento" class="form-control" type="date" placeholder="Fecha_Nacimiento" />
+                <label asp-for="Fecha_Nacimiento">Fecha de Nacimiento</label>
+                <span asp-validation-for="Fecha_Nacimiento" class="text-danger"></span>
             </div>
         </div>
-    </div>
-
-    <!-- Información adicional en card -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-light">
-            Información adicional
+        <div class="col-md-6 d-flex align-items-end justify-content-end">
+            <button class="btn btn-success btn-lg" type="submit">Guardar Persona</button>
         </div>
-        <div class="card-body">
-
-            <!-- Fila: CI y Shift -->
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input asp-for="NumCi" class="form-control" maxlength="15" placeholder="CI" />
-                        <label asp-for="NumCi">CI</label>
-                        <span asp-validation-for="NumCi" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input asp-for="Fecha_Nacimiento" type="text" class="form-control" id="BirthDate" placeholder="Fecha de Nacimiento (yyyy-MM-dd)" />
-                        <label asp-for="Fecha_Nacimiento">Fecha de Nacimiento (yyyy-MM-dd)</label>
-                        <span asp-validation-for="Fecha_Nacimiento" class="text-danger"></span>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input asp-for="Profesion" class="form-control" maxlength="40" placeholder="Profesión" />
-                        <label asp-for="Profesion">Profesión</label>
-                        <span asp-validation-for="Profesion" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input asp-for="Turno" class="form-control" maxlength="10" placeholder="Turno" />
-                        <label asp-for="Turno">Turno</label>
-                        <span asp-validation-for="Turno" class="text-danger"></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input asp-for="Numero_Licencia" class="form-control" maxlength="15" placeholder="Número de Licencia" />
-                        <label asp-for="Numero_Licencia">Número de Licencia</label>
-                        <span asp-validation-for="Numero_Licencia" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input asp-for="Categoria_Licencia" class="form-control" maxlength="2" placeholder="Categoría de Licencia" />
-                        <label asp-for="Categoria_Licencia">Categoría de Licencia</label>
-                        <span asp-validation-for="Categoria_Licencia" class="text-danger"></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-check form-switch mb-3">
-                <input asp-for="Mobilidad" class="form-check-input" type="checkbox" id="Mobility" />
-                <label asp-for="Mobilidad" class="form-check-label">Movilidad</label>
-            </div>
-
-            @*   <div class="form-check form-switch mb-3">
-                <input asp-for="Active" class="form-check-input" type="checkbox" id="Active" />
-                <label asp-for="Active" class="form-check-label">Activo</label>
-            </div> *@
-
-        </div>
-    </div>
-
-    <div class="alert alert-warning mt-3">
-        <strong>Nota:</strong> Primero guarda la persona para poder agregar direcciones.
-    </div>
-
-    <!-- Botones -->
-    <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">
-            <i class="fa fa-save"></i> Guardar
-        </button>
-        <a href="/Personas" class="btn btn-secondary">
-            <i class="fa fa-times"></i> Cancelar
-        </a>
     </div>
 </form>
 
+<a asp-action="Index" class="btn btn-secondary mt-3">Volver a la Lista</a>
+
+@await Html.PartialAsync("_DireccionesModal")
+
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
     <script>
-        $(function () {
-            // Inicializar datepicker
-            $('#BirthDate').datepicker({
-                format: 'yyyy-mm-dd',
-                autoclose: true,
-                todayHighlight: true
-            });
-        });
-
-        (() => {
+        // Ejemplo de JavaScript de inicio para deshabilitar el envío de formularios si hay campos no válidos
+        (function () {
             'use strict';
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
+            window.addEventListener('load', function () {
+                // Obtener todos los formularios a los que queremos aplicar estilos de validación de Bootstrap personalizados
+                var forms = document.querySelectorAll('.needs-validation');
+            
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                form.classList.add('was-validated');
+                                return;
+                            }
 
-                    event.preventDefault();
-
-                    if (!form.checkValidity()) {
-                        event.stopPropagation();
-                        form.classList.add('was-validated');
-                        return;
-                    }
-
-                    Swal.fire({
-                        title: '¿Deseas guardar este registro?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sí, guardar',
-                        cancelButtonText: 'Cancelar',
-                        reverseButtons: true
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
+                            Swal.fire({
+                                title: '¿Deseas guardar este registro?',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: 'Sí, guardar',
+                                cancelButtonText: 'Cancelar',
+                                reverseButtons: true
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    form.submit();
+                                }
+                            });
+                        }, false);
                     });
-                }, false);
             });
-        })();
+        })(); 
 
-            function cargarDirecciones() {
+
+        function mostrarCamposPorTipo() {
+            // El valor de TipoPersona.Empleado es 3
+            const EMPLEADO_ID = "3"; 
+            
+            let tipoId = document.getElementById("TipoSeleccionado").value;
+            let camposEmpleado = document.getElementById("campos-empleado");
+
+            // Comparamos el valor seleccionado con el ID del Empleado
+            if (tipoId === EMPLEADO_ID) {
+                camposEmpleado.style.display = "block"; // Mostrar campos si es Empleado
+            } else {
+                camposEmpleado.style.display = "none"; // Ocultar campos en otro caso
+            }
+        }
+
+        // 1. Ejecutar al cargar la página para asegurar la visibilidad inicial
+        document.addEventListener('DOMContentLoaded', (event) => {
+            mostrarCamposPorTipo(); 
+        });
+        
+        // 2. Función original para cargar direcciones (la mantengo aquí)
+        function cargarDirecciones() {
             let personaId = $("#PersonaId").val();
             $.get("/Direcciones/Listar", { personaId }, function (data) {
                 let rows = "";
@@ -201,6 +228,5 @@
                 $("#tablaDirecciones tbody").html(rows);
             });
         }
-
     </script>
 }

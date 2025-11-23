@@ -8,15 +8,13 @@ namespace BakeryAdmin.Models
         // 1. ATRIBUTOS
         public int PersonaId { get; set; }
 
-        // Aplicación de ENCAPSULAMIENTO y Data Annotations
-
         [Required(ErrorMessage = "El nombre es Obligatorio.")]
         [StringLength(40, ErrorMessage = "No puede superar los 40 caracteres.")]
-        public string Nombres { get; private set; }
+        public string Nombres { get; set; }
 
         [Required(ErrorMessage = "El apellido es Obligatorio.")]
         [StringLength(40, ErrorMessage = "No puede superar los 40 caracteres.")]
-        public string Apellidos { get; private set; }
+        public string Apellidos { get; set; }
 
         [Required(ErrorMessage = "El numero de Celular es Obligatorio.")]
         [StringLength(15, MinimumLength = 8, ErrorMessage = "Debe tener entre 8 y 15 dígitos.")]
@@ -32,9 +30,13 @@ namespace BakeryAdmin.Models
 
         public DateTime? Fecha_Nacimiento { get; set; }
 
+        public TipoPersona TipoPersona { get; set; }
+
         public string? Username { get; set; }
         public string? PasswordHash { get; set; }
         public bool Active { get; set; } = true;
+
+        // Finalizacion de 1. Atributos
 
         // Relación con Dirección 
         public ICollection<Direccion> Direcciones { get; set; } = new List<Direccion>();

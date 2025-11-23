@@ -35,27 +35,70 @@ namespace BakeryAdmin.Controllers
         {
             ViewBag.TiposPersona = CargarTipos();
 
-            return View();
+            return View(new Empleado("", "", "")); 
         }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PersonaBase model)
+        public async Task<IActionResult> Create(Empleado model) 
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _db.Personas.Add(model);
-                await _db.SaveChangesAsync();
-
-                TempData["SuccessMessage"] = "El registro se guard� correctamente.";
-                return RedirectToAction("Edit", new { id = model.PersonaId });
+                ViewBag.TiposPersona = CargarTipos(); 
+                return View(model); 
             }
+            PersonaBase nuevaPersona;
+            
+            switch (model.TipoPersona)
+            {
+                case Enums.TipoPersona.Cliente:
+                nuevaPersona = new Cliente(model.Nombres, model.Apellidos, model.NumCelular)
+                {
+                    // Asignar los campos comunes restantes de PersonaBase
+                    NumCi = model.NumCi,
+                    Correo_Electronico = model.Correo_Electronico,
+                    Fecha_Nacimiento = model.Fecha_Nacimiento,
+                    TipoPersona = model.TipoPersona,
+                    Active = true,
+                };
+                break;
+                
+                case Enums.TipoPersona.Empleado:
+                nuevaPersona = new Empleado(model.Nombres, model.Apellidos, model.NumCelular)
+                {
+                    // Asignar los campos comunes de PersonaBase
+                    NumCi = model.NumCi,
+                    Correo_Electronico = model.Correo_Electronico,
+                    Fecha_Nacimiento = model.Fecha_Nacimiento,
+                    TipoPersona = model.TipoPersona,
+                    Active = true,
+                
+                    // Asignar los campos específicos de Empleado
+                    Profesion = model.Profesion,
+                    Numero_Licencia = model.Numero_Licencia,
+                    Categoria_Licencia = model.Categoria_Licencia,
+                    Mobilidad = model.Mobilidad,
+                    Turno = model.Turno
+                };
+                break;
 
-            ViewBag.TiposPersona = CargarTipos();
+                default:
+                ModelState.AddModelError(nameof(model.TipoPersona), "Seleccione un Tipo de Persona válido.");
+                ViewBag.TiposPersona = CargarTipos();
 
-            return View(model);
+                return View(model);
+            }
+         // **Persistencia y Cohesión**: Añadir y Guardar el objeto POLIMÓRFICO
+         // El DBContext, al ver que nuevaPersona es de tipo PersonaBase, lo guardará como Cliente o Empleado
+
+             _db.Personas.Add(nuevaPersona);
+             await _db.SaveChangesAsync(); 
+
+             TempData["SuccessMessage"] = "El registro se guardo correctamente.";
+    
+             return RedirectToAction("Edit", new { id = nuevaPersona.PersonaId }); 
+
         }
-
         public async Task<IActionResult> Edit(int id)
         {
             var p = await _db.Personas.FindAsync(id);
@@ -79,7 +122,7 @@ namespace BakeryAdmin.Controllers
             return RedirectToAction("Edit", new { id = model.PersonaId });
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int? id)
         {
             var p = await _db.Personas.Include(x => x.Direcciones).AsNoTracking().FirstOrDefaultAsync(x => x.PersonaId == id);
             if (p == null) return NotFound();
