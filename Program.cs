@@ -4,6 +4,8 @@ using BakeryAdmin.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Linq;
+using Microsoft.AspNetCore.Routing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,5 +74,23 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+// Endpoint simple de salud
+app.MapGet("/health", () => Results.Text("OK"));
+
+// Endpoint temporal que lista endpoints registrados (útil para diagnosticar rutas)
+app.MapGet("/routes", (EndpointDataSource ds) =>
+{
+    var lines = ds.Endpoints
+                  .Select(e => (e.DisplayName ?? e.ToString()))
+                  .OrderBy(s => s)
+                  .ToArray();
+    return Results.Text(string.Join("\n", lines), "text/plain");
+});
 
 app.Run();
