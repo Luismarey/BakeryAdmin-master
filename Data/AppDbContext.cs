@@ -45,6 +45,16 @@ namespace BakeryAdmin.Data
                 .WithOne(o => (PersonaBase)o.Persona)
                 .HasForeignKey(o => o.PersonaId);
 
+            // Configuracion global para propiedades decimal
+            foreach (var property in builder.Model.GetEntityTypes()
+            .SelectMany(t => t.GetProperties())
+            .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+            {
+                // Se establece la precisión. Se pueden ajustar los valores según sea necesario
+                   property.SetPrecision(18); 
+                   property.SetScale(4);
+            }
+
             // Datos iniciales para Personas
             builder.Entity<Cliente>().HasData
             (
