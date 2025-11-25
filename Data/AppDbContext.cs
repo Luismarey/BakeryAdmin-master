@@ -143,7 +143,7 @@ namespace BakeryAdmin.Data
                         Numero_Licencia = "G55555",
                         Categoria_Licencia = "C",
                         Mobilidad = true,
-                        Turno = "Mañana",
+                        Turno = "Maï¿½ana",
                         Username = "miguelc",
                         PasswordHash = "hashedpassword",
                         Active = true
@@ -204,8 +204,8 @@ namespace BakeryAdmin.Data
                 new Producto
                 {
                     ProductoId = 1,
-                    Categoria = "Panadería",
-                    Nombre = "Pan Francés",
+                    Categoria = "Panaderï¿½a",
+                    Nombre = "Pan Francï¿½s",
                     Descripcion = "Pan fresco elaborado diariamente",
                     Precio = 1.50m,
                     Fotografia = "/img/pan-frances.jpg",
@@ -216,9 +216,9 @@ namespace BakeryAdmin.Data
                 new Producto
                 {
                     ProductoId = 2,
-                    Categoria = "Panadería",
+                    Categoria = "Panaderï¿½a",
                     Nombre = "Marraqueta",
-                    Descripcion = "Clásica marraqueta crujiente",
+                    Descripcion = "Clï¿½sica marraqueta crujiente",
                     Precio = 1.00m,
                     Fotografia = "/img/marraqueta.jpg",
                     Unidad = "Unidad",
@@ -228,9 +228,9 @@ namespace BakeryAdmin.Data
                 new Producto
                 {
                     ProductoId = 3,
-                    Categoria = "Pastelería",
+                    Categoria = "Pastelerï¿½a",
                     Nombre = "Torta de Chocolate",
-                    Descripcion = "Torta húmeda con cobertura de chocolate",
+                    Descripcion = "Torta hï¿½meda con cobertura de chocolate",
                     Precio = 35.00m,
                     Fotografia = "/img/torta-chocolate.jpg",
                     Unidad = "Unidad",
@@ -240,7 +240,7 @@ namespace BakeryAdmin.Data
                 new Producto
                 {
                     ProductoId = 4,
-                    Categoria = "Pastelería",
+                    Categoria = "Pastelerï¿½a",
                     Nombre = "Rollo de Canela",
                     Descripcion = "Rollo suave con glaseado dulce",
                     Precio = 4.50m,
@@ -253,8 +253,8 @@ namespace BakeryAdmin.Data
                 {
                     ProductoId = 5,
                     Categoria = "Bebidas",
-                    Nombre = "Café Americano",
-                    Descripcion = "Café recién pasado",
+                    Nombre = "Cafï¿½ Americano",
+                    Descripcion = "Cafï¿½ reciï¿½n pasado",
                     Precio = 5.00m,
                     Fotografia = "/img/cafe-americano.jpg",
                     Unidad = "Vaso",
@@ -268,7 +268,7 @@ namespace BakeryAdmin.Data
                 new Produccion
                 {
                     ProduccionId = 1,
-                    ProductoId = 1, // Pan Francés
+                    ProductoId = 1, // Pan Francï¿½s
                     NumeroProduccion = "PRD-001",
                     FechaProduccion = new DateTime(2025, 1, 10),
                     FechaVencimiento = new DateTime(2025, 1, 12),
@@ -320,7 +320,7 @@ namespace BakeryAdmin.Data
                 new Produccion
                 {
                     ProduccionId = 5,
-                    ProductoId = 5, // Café Americano
+                    ProductoId = 5, // Cafï¿½ Americano
                     NumeroProduccion = "PRD-005",
                     FechaProduccion = new DateTime(2025, 1, 10),
                     FechaVencimiento = new DateTime(2025, 1, 20),

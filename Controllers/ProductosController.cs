@@ -28,7 +28,7 @@ namespace BakeryAdmin.Controllers
             {
                 if (Fotografia != null && Fotografia.Length > 0)
                 {
-                    // Generar un nombre único
+                    // Generar un nombre ï¿½nico
                     var fileName = Guid.NewGuid() + Path.GetExtension(Fotografia.FileName);
                     var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
 
@@ -47,7 +47,7 @@ namespace BakeryAdmin.Controllers
 
                 _db.Productos.Add(model);
                 _db.SaveChanges();
-                TempData["SuccessMessage"] = "El registro se guardó correctamente.";
+                TempData["SuccessMessage"] = "El registro se guardï¿½ correctamente.";
                 return RedirectToAction("Edit", new { id = model.ProductoId });
             }
             return View(model);
@@ -69,7 +69,7 @@ namespace BakeryAdmin.Controllers
 
             if (Fotografia != null && Fotografia.Length > 0)
             {
-                // Generar un nombre único
+                // Generar un nombre unico
                 var fileName = Guid.NewGuid() + Path.GetExtension(Fotografia.FileName);
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
 
@@ -88,7 +88,7 @@ namespace BakeryAdmin.Controllers
 
             _db.Productos.Update(model);
             await _db.SaveChangesAsync();
-            TempData["SuccessMessage"] = "El registro se guardó correctamente.";
+            TempData["SuccessMessage"] = "El registro se guardï¿½ correctamente.";
             return RedirectToAction("Edit", new { id = model.ProductoId });
         }
 

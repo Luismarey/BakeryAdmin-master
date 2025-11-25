@@ -36,7 +36,6 @@ namespace BakeryAdmin.Models
         public string? PasswordHash { get; set; }
         public bool Active { get; set; } = true;
 
-        // Finalizacion de 1. Atributos
 
         // Relación con Dirección 
         public ICollection<Direccion> Direcciones { get; set; } = new List<Direccion>();

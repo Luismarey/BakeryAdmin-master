@@ -31,24 +31,31 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <strong>Profesión:</strong> <br /> @Model.Profesion
+           @if (Model is Empleado empleado) // Pattern Matching
+            {
+                <h5 class="mt-4">Datos Específicos del Empleado</h5>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Profesión:</strong> <br /> @empleado.Profesion
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Movilidad:</strong> <br /> @(empleado.Mobilidad ? "Sí" : "No")
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <strong>Movilidad:</strong> <br /> @(Model.Mobilidad ? "Sí" : "No")
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <strong>Número de Licencia:</strong> <br /> @Model.Numero_Licencia
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Número de Licencia:</strong> <br /> @empleado.Numero_Licencia
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Categoría de Licencia:</strong> <br /> @empleado.Categoria_Licencia
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <strong>Categoría de Licencia:</strong> <br /> @Model.Categoria_Licencia
-                </div>
+            }
             </div>
-        </div>
+    </div>
+    
     </div>
 
     <!-- Direcciones -->

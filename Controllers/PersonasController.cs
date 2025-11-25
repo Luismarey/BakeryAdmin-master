@@ -47,6 +47,7 @@ namespace BakeryAdmin.Controllers
                 ViewBag.TiposPersona = CargarTipos(); 
                 return View(model); 
             }
+            //Polimorfismo: Crear instancia según TipoPersona
             PersonaBase nuevaPersona;
             
             switch (model.TipoPersona)
@@ -88,8 +89,8 @@ namespace BakeryAdmin.Controllers
 
                 return View(model);
             }
-         // **Persistencia y Cohesión**: Añadir y Guardar el objeto POLIMÓRFICO
-         // El DBContext, al ver que nuevaPersona es de tipo PersonaBase, lo guardará como Cliente o Empleado
+            // Persistencia y Cohesión: Añadir y Guardar el objeto nuevaPersona
+            
 
              _db.Personas.Add(nuevaPersona);
              await _db.SaveChangesAsync(); 
@@ -117,7 +118,7 @@ namespace BakeryAdmin.Controllers
             if (!ModelState.IsValid) return View(model);
             _db.Personas.Update(model);
             await _db.SaveChangesAsync();
-            TempData["SuccessMessage"] = "El registro se guard� correctamente.";
+            TempData["SuccessMessage"] = "El registro se guardo correctamente.";
             ViewBag.TiposPersona = CargarTipos();
             return RedirectToAction("Edit", new { id = model.PersonaId });
         }

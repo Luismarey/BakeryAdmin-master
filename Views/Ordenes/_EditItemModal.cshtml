@@ -12,7 +12,10 @@
         <div class="mb-3">
             <label class="form-label">Producto</label>
             <select asp-for="ProductoId" class="form-select">
-                @foreach (var p in ViewBag.Productos as List<BakeryAdmin.Models.Producto>)
+                @{
+                    var productos = ViewBag.Productos as List<BakeryAdmin.Models.Producto> ?? new List<BakeryAdmin.Models.Producto>();
+                }
+                @foreach (var p in productos)
                 {
                     <option value="@p.ProductoId" selected="@(Model.ProductoId == p.ProductoId)">
                         @p.Nombre
