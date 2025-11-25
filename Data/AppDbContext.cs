@@ -26,11 +26,20 @@ namespace BakeryAdmin.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<PersonaBase>()
-                .HasDiscriminator<string>("TipoPersona")
-                .HasValue<Cliente>("Cliente")
-                .HasValue<Empleado>("Empleado");
 
+            // Configuracion de la herencia para PersonaBase
+            builder.Entity<PersonaBase>()
+                .HasKey(p => p.PersonaId);
+
+            // Configuracion del Discriminador    
+            builder.Entity<PersonaBase>()
+                .HasDiscriminator<Enums.TipoPersona>(p => p.TipoPersona)
+                .HasValue<Cliente>(Enums.TipoPersona.Cliente)
+                .HasValue<Empleado>(Enums.TipoPersona.Empleado)
+                .HasValue<PersonaBase>(Enums.TipoPersona.Proveedor)
+                .HasValue<PersonaBase>(Enums.TipoPersona.Vendedor);
+
+            // Relacion uno a muchos entre PersonaBase y Direccion    
             builder.Entity<PersonaBase>()
                 .HasMany(p => p.Direcciones)
                 .WithOne(o => (PersonaBase)o.Persona)
@@ -45,6 +54,7 @@ namespace BakeryAdmin.Data
                     NumCi = "1234567",
                     Correo_Electronico = "juan.perez@email.com",
                     Fecha_Nacimiento = new DateTime(1990, 5, 12),
+                    TipoPersona = Enums.TipoPersona.Cliente,
                     Username = "juanp",
                     PasswordHash = "hashedpassword",
                     Active = true
@@ -59,6 +69,7 @@ namespace BakeryAdmin.Data
                     NumCi = "7654321",
                     Correo_Electronico = "maria.lopez@email.com",
                     Fecha_Nacimiento = new DateTime(1985, 11, 23),
+                    TipoPersona = Enums.TipoPersona.Empleado,
                     Profesion = "Repostera",
                     Numero_Licencia = "B54321",
                     Categoria_Licencia = "C",
@@ -78,6 +89,7 @@ namespace BakeryAdmin.Data
                     NumCi = "4567890",
                     Correo_Electronico = "carlos.gonzales@email.com",
                     Fecha_Nacimiento = new DateTime(1992, 2, 18),
+                    TipoPersona = Enums.TipoPersona.Cliente,
                     Username = "carlosg",
                     PasswordHash = "hashedpassword",
                     Active = true
@@ -92,6 +104,7 @@ namespace BakeryAdmin.Data
                     NumCi = "9081726",
                     Correo_Electronico = "ana.torrez@email.com",
                     Fecha_Nacimiento = new DateTime(1996, 8, 9),
+                    TipoPersona = Enums.TipoPersona.Cliente,
                     Username = "anat",
                     PasswordHash = "hashedpassword",
                     Active = true
@@ -106,6 +119,7 @@ namespace BakeryAdmin.Data
                         NumCi = "3344556",
                         Correo_Electronico = "luis.rojas@email.com",
                         Fecha_Nacimiento = new DateTime(1991, 7, 28),
+                        TipoPersona = Enums.TipoPersona.Empleado,
                         Profesion = "Cajero",
                         Numero_Licencia = "E33333",
                         Categoria_Licencia = "C",
@@ -125,6 +139,7 @@ namespace BakeryAdmin.Data
                         NumCi = "5566778",
                         Correo_Electronico = "sofia.vargas@email.com",
                         Fecha_Nacimiento = new DateTime(1994, 4, 14),
+                        TipoPersona = Enums.TipoPersona.Cliente,
                         Username = "sofiav",
                         PasswordHash = "hashedpassword",
                         Active = true
@@ -139,6 +154,7 @@ namespace BakeryAdmin.Data
                         NumCi = "2233445",
                         Correo_Electronico = "miguel.castro@email.com",
                         Fecha_Nacimiento = new DateTime(1988, 12, 1),
+                        TipoPersona = Enums.TipoPersona.Empleado,
                         Profesion = "Chofer",
                         Numero_Licencia = "G55555",
                         Categoria_Licencia = "C",
@@ -158,6 +174,7 @@ namespace BakeryAdmin.Data
                         NumCi = "6677889",
                         Correo_Electronico = "patricia.mendoza@email.com",
                         Fecha_Nacimiento = new DateTime(1993, 9, 3),
+                        TipoPersona = Enums.TipoPersona.Cliente,
                         Username = "patriciam",
                         PasswordHash = "hashedpassword",
                         Active = true
@@ -172,6 +189,7 @@ namespace BakeryAdmin.Data
                         NumCi = "9988776",
                         Correo_Electronico = "jorge.ramirez@email.com",
                         Fecha_Nacimiento = new DateTime(1997, 6, 21),
+                        TipoPersona = Enums.TipoPersona.Cliente,
                         Username = "jorger",
                         PasswordHash = "hashedpassword",
                         Active = true
@@ -186,6 +204,7 @@ namespace BakeryAdmin.Data
                         NumCi = "1122334",
                         Correo_Electronico = "elena.suarez@email.com",
                         Fecha_Nacimiento = new DateTime(1990, 10, 30),
+                        TipoPersona = Enums.TipoPersona.Empleado,
                         Profesion = "Supervisora",
                         Numero_Licencia = "J88888",
                         Categoria_Licencia = "B",

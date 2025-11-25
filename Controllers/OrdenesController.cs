@@ -84,24 +84,23 @@ namespace BakeryAdmin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Orden model)
+        public IActionResult Create(Orden model)
         {
             if (ModelState.IsValid)
             {
-                try { 
+                try
+                {
                     var nuevaOrden = _ordenesServices.CrearOrden(model);
                     TempData["SuccessMessage"] = "La Orden se guardo exitosamente.";
                     return RedirectToAction("Edit", new { id = nuevaOrden.OrdenId });
                 }
-
                 catch (InvalidOperationException ex)
                 {
-                    ModelState.AddModelError("", ex.Message);
+                    ModelState.AddModelError(string.Empty, ex.Message);
                 }
+            }
 
-            };
-
-            CargarViewBags(); 
+            CargarViewBags();
 
             return View(model);
         }
@@ -215,8 +214,12 @@ namespace BakeryAdmin.Controllers
             model.Subtotal = model.PrecioUnitario * model.Cantidad;
             _db.OrdenItems.Add(model);
 
-            var orden = _db.Ordenes.Include(p=>p.Items).AsNoTracking().FirstOrDefault(p=> p.OrdenId == model.OrdenId);
-            orden.Total = model.Subtotal + orden?.Items.Sum(p=>p.Subtotal) ?? 0;
+            var orden = _db.Ordenes.Include(p => p.Items).FirstOrDefault(p => p.OrdenId == model.OrdenId);
+            if (orden == null)
+                return BadRequest("Orden no encontrada");
+
+            var existingSum = orden.Items?.Sum(p => p.Subtotal) ?? 0m;
+            orden.Total = model.Subtotal + existingSum;
             _db.Ordenes.Update(orden);
 
             _db.SaveChanges();

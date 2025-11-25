@@ -27,10 +27,17 @@ namespace BakeryAdmin.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if(user != null)
             {
-                var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, false);
+                var userName = await _userManager.GetUserNameAsync(user);
+                if (string.IsNullOrEmpty(userName))
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login");
+                    return View();
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(userName, password, false, false);
                 if(result.Succeeded) return Redirect(returnUrl ?? "/");
             }
-            ModelState.AddModelError(string.Empty, "Invalid login");
+            ModelState.AddModelError(string.Empty, "Logeo invalido");
             return View();
         }
 
