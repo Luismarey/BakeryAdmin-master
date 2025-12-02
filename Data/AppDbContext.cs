@@ -34,10 +34,11 @@ namespace BakeryAdmin.Data
             // Configuracion del Discriminador    
             builder.Entity<PersonaBase>()
                 .HasDiscriminator<Enums.TipoPersona>(p => p.TipoPersona)
+                .HasValue<PersonaBase>(Enums.TipoPersona.Base)
                 .HasValue<Cliente>(Enums.TipoPersona.Cliente)
                 .HasValue<Empleado>(Enums.TipoPersona.Empleado)
-                .HasValue<PersonaBase>(Enums.TipoPersona.Proveedor)
-                .HasValue<PersonaBase>(Enums.TipoPersona.Vendedor);
+                .HasValue<Proveedor>(Enums.TipoPersona.Proveedor)
+                .HasValue<Vendedor>(Enums.TipoPersona.Vendedor);
 
             // Relacion uno a muchos entre PersonaBase y Direccion    
             builder.Entity<PersonaBase>()
@@ -91,30 +92,30 @@ namespace BakeryAdmin.Data
                 }
             );
 
-            builder.Entity<Cliente>().HasData
+            builder.Entity<Proveedor>().HasData
             (
-                new Cliente("Carlos", "Gonzales", "700112233")
+                new Proveedor("Carlos", "Gonzales", "700112233")
                 {
                     PersonaId = 3,
                     NumCi = "4567890",
                     Correo_Electronico = "carlos.gonzales@email.com",
                     Fecha_Nacimiento = new DateTime(1992, 2, 18),
-                    TipoPersona = Enums.TipoPersona.Cliente,
+                    TipoPersona = Enums.TipoPersona.Proveedor,
                     Username = "carlosg",
                     PasswordHash = "hashedpassword",
                     Active = true
                 }
             );
 
-            builder.Entity<Cliente>().HasData
+            builder.Entity<Vendedor>().HasData
             (
-                new Cliente("Ana", "Torrez", "720334455")
+                new Vendedor("Ana", "Torrez", "720334455")
                 {
                     PersonaId = 4,
                     NumCi = "9081726",
                     Correo_Electronico = "ana.torrez@email.com",
                     Fecha_Nacimiento = new DateTime(1996, 8, 9),
-                    TipoPersona = Enums.TipoPersona.Cliente,
+                    TipoPersona = Enums.TipoPersona.Vendedor,
                     Username = "anat",
                     PasswordHash = "hashedpassword",
                     Active = true
@@ -176,15 +177,15 @@ namespace BakeryAdmin.Data
                     }
                 );
 
-            builder.Entity<Cliente>().HasData
+            builder.Entity<Vendedor>().HasData
                 (
-                    new Cliente("Patricia", "Mendoza", "713445566")
+                    new Vendedor("Patricia", "Mendoza", "713445566")
                     {
                         PersonaId = 8,
                         NumCi = "6677889",
                         Correo_Electronico = "patricia.mendoza@email.com",
                         Fecha_Nacimiento = new DateTime(1993, 9, 3),
-                        TipoPersona = Enums.TipoPersona.Cliente,
+                        TipoPersona = Enums.TipoPersona.Vendedor,
                         Username = "patriciam",
                         PasswordHash = "hashedpassword",
                         Active = true
@@ -233,8 +234,8 @@ namespace BakeryAdmin.Data
                 new Producto
                 {
                     ProductoId = 1,
-                    Categoria = "Panader�a",
-                    Nombre = "Pan Franc�s",
+                    Categoria = "Panaderia",
+                    Nombre = "Pan Frances",
                     Descripcion = "Pan fresco elaborado diariamente",
                     Precio = 1.50m,
                     Fotografia = "/img/pan-frances.jpg",
@@ -245,9 +246,9 @@ namespace BakeryAdmin.Data
                 new Producto
                 {
                     ProductoId = 2,
-                    Categoria = "Panader�a",
+                    Categoria = "Panaderia",
                     Nombre = "Marraqueta",
-                    Descripcion = "Cl�sica marraqueta crujiente",
+                    Descripcion = "Clasica marraqueta crujiente",
                     Precio = 1.00m,
                     Fotografia = "/img/marraqueta.jpg",
                     Unidad = "Unidad",
@@ -257,9 +258,9 @@ namespace BakeryAdmin.Data
                 new Producto
                 {
                     ProductoId = 3,
-                    Categoria = "Pasteler�a",
+                    Categoria = "Pasteleria",
                     Nombre = "Torta de Chocolate",
-                    Descripcion = "Torta h�meda con cobertura de chocolate",
+                    Descripcion = "Torta humeda con cobertura de chocolate",
                     Precio = 35.00m,
                     Fotografia = "/img/torta-chocolate.jpg",
                     Unidad = "Unidad",
@@ -269,7 +270,7 @@ namespace BakeryAdmin.Data
                 new Producto
                 {
                     ProductoId = 4,
-                    Categoria = "Pasteler�a",
+                    Categoria = "Pasteleria",
                     Nombre = "Rollo de Canela",
                     Descripcion = "Rollo suave con glaseado dulce",
                     Precio = 4.50m,
@@ -282,8 +283,8 @@ namespace BakeryAdmin.Data
                 {
                     ProductoId = 5,
                     Categoria = "Bebidas",
-                    Nombre = "Caf� Americano",
-                    Descripcion = "Caf� reci�n pasado",
+                    Nombre = "Cafe Americano",
+                    Descripcion = "Cafe recien pasado",
                     Precio = 5.00m,
                     Fotografia = "/img/cafe-americano.jpg",
                     Unidad = "Vaso",

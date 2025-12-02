@@ -4,6 +4,7 @@
     {
         public enum TipoPersona
         {
+            Base = 0,
             Cliente = 1,
             Proveedor = 2,
             Empleado = 3,
@@ -20,6 +21,7 @@
         {
             Efectivo = 1,
             Qr = 2,
+            PagoTarjeta = 3
         }
         
     }

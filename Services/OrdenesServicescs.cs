@@ -33,6 +33,10 @@ namespace BakeryAdmin.Services
                 case MetodoPago.Qr:
                     procesador = new PagoQR();
                     break;
+
+                case MetodoPago.PagoTarjeta:
+                    procesador = new PagoTarjeta();
+                    break;
                 default:
                     throw new NotSupportedException("Forma de pago no soportada.");
             }

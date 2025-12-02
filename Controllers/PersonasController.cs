@@ -1,5 +1,6 @@
 using BakeryAdmin.Data;
 using BakeryAdmin.Models;
+using BakeryAdmin.ViewModels;   
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,9 @@ namespace BakeryAdmin.Controllers
         {
             ViewBag.TiposPersona = CargarTipos();
 
-            return View(new Empleado("", "", "")); 
+            var model = new Empleado("", "", "");
+
+            return View(model);
         }
         
         [HttpPost]
@@ -47,7 +50,7 @@ namespace BakeryAdmin.Controllers
                 ViewBag.TiposPersona = CargarTipos(); 
                 return View(model); 
             }
-            //Polimorfismo: Crear instancia según TipoPersona
+
             PersonaBase nuevaPersona;
             
             switch (model.TipoPersona)
@@ -55,7 +58,6 @@ namespace BakeryAdmin.Controllers
                 case Enums.TipoPersona.Cliente:
                 nuevaPersona = new Cliente(model.Nombres, model.Apellidos, model.NumCelular)
                 {
-                    // Asignar los campos comunes restantes de PersonaBase
                     NumCi = model.NumCi,
                     Correo_Electronico = model.Correo_Electronico,
                     Fecha_Nacimiento = model.Fecha_Nacimiento,
@@ -83,12 +85,35 @@ namespace BakeryAdmin.Controllers
                 };
                 break;
 
+                case Enums.TipoPersona.Proveedor:
+                nuevaPersona = new Proveedor(model.Nombres, model.Apellidos, model.NumCelular)
+                {
+                    NumCi = model.NumCi,
+                    Correo_Electronico = model.Correo_Electronico,
+                    Fecha_Nacimiento = model.Fecha_Nacimiento,
+                    TipoPersona = model.TipoPersona,
+                    Active = true,
+                };
+                break;
+
+                case Enums.TipoPersona.Vendedor:
+                nuevaPersona = new Vendedor(model.Nombres, model.Apellidos, model.NumCelular)
+                {
+                    NumCi = model.NumCi,
+                    Correo_Electronico = model.Correo_Electronico,
+                    Fecha_Nacimiento = model.Fecha_Nacimiento,
+                    TipoPersona = model.TipoPersona,
+                    Active = true,
+                };
+                break;
+
                 default:
                 ModelState.AddModelError(nameof(model.TipoPersona), "Seleccione un Tipo de Persona válido.");
                 ViewBag.TiposPersona = CargarTipos();
 
                 return View(model);
             }
+
             // Persistencia y Cohesión: Añadir y Guardar el objeto nuevaPersona
             
 
