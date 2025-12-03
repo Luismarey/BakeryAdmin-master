@@ -11,7 +11,9 @@ namespace BakeryAdmin.Controllers
         private readonly AppDbContext _db;
 
         public ProduccionesController(AppDbContext db)
-        { _db = db; }
+        { 
+            _db = db; 
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -42,7 +44,7 @@ namespace BakeryAdmin.Controllers
 
                 _db.Producciones.Add(model);
                 await _db.SaveChangesAsync();
-                TempData["SuccessMessage"] = "El registro se guardó correctamente.";
+                TempData["SuccessMessage"] = "El registro se guardï¿½ correctamente.";
                 return RedirectToAction("Edit", new { id = model.ProduccionId });
             }
             return View(model);
@@ -75,7 +77,7 @@ namespace BakeryAdmin.Controllers
 
             _db.Producciones.Update(model);
             await _db.SaveChangesAsync();
-            TempData["SuccessMessage"] = "El registro se guardó correctamente.";
+            TempData["SuccessMessage"] = "El registro se guardï¿½ correctamente.";
             return RedirectToAction("Edit", new { id = model.ProduccionId });
         }
 
