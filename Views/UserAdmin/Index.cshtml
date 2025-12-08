@@ -1,0 +1,36 @@
+@model IEnumerable<ApplicationUser>
+
+<h2>Administración de Usuarios</h2>
+
+<a class="btn btn-primary mb-3" href="/UserAdmin/Create">Nuevo Usuario</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Usuario</th>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Email</td>
+                <td>@u.UserName</td>
+                <td>@u.NombreCompleto</td>
+                <td>@u.PhoneNumber</td>
+                <td>
+
+                    <a class="btn btn-sm btn-info" href="/UserAdmin/Edit/@u.Id">Editar</a>
+                    <a class="btn btn-sm btn-secondary" href="/UserAdmin/AssignRoles/@u.Id">Roles</a>
+                    <a class="btn btn-sm btn-warning" href="/UserAdmin/Disable/@u.Id">Desactivar</a>
+                    <a class="btn btn-sm btn-danger" href="/UserAdmin/Delete/@u.Id">Eliminar</a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

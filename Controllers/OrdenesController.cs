@@ -2,6 +2,7 @@ using BakeryAdmin.Models;
 using BakeryAdmin.Data;
 using BakeryAdmin.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using static BakeryAdmin.Models.Enums;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BakeryAdmin.Controllers
 {
+    [Authorize]
     public class OrdenesController : Controller
     {
         private readonly IOrdenesService _ordenesServices;
@@ -21,9 +23,10 @@ namespace BakeryAdmin.Controllers
             _ordenesServices = ordenesService; 
         }
 
+        [Authorize(Roles = "Administrador,Repartidor, Panadero, Vendedor,Cliente")]
         public async Task<IActionResult> Index()
         {
-            var items = await _db.Ordenes.Include(x => x.Cliente).AsNoTracking().ToListAsync();
+            var items = await _db.Ordenes.Include(x => x.Cliente).Include(p => p.Items).AsNoTracking().ToListAsync();
             return View(items);
         }
 
@@ -75,6 +78,7 @@ namespace BakeryAdmin.Controllers
                                        }).ToList();
         }
 
+        [Authorize(Roles = "Administrador,Vendedor,Cliente")]
         public IActionResult Create()
         {
             CargarViewBags();
@@ -84,6 +88,7 @@ namespace BakeryAdmin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Vendedor,Cliente")]
         public IActionResult Create(Orden model)
         {
             if (ModelState.IsValid)
@@ -105,10 +110,14 @@ namespace BakeryAdmin.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administrador,Vendedor,Cliente")]
         public async Task<IActionResult> Edit(int id)
         {
             var p = await _db.Ordenes.Include(p=>p.Items).ThenInclude(p=>p.Producto).AsNoTracking().FirstOrDefaultAsync(x=>x.OrdenId == id);
-            if (p == null) return NotFound();
+            if (p == null) 
+            {
+                return NotFound();
+            }
 
             CargarViewBags();
 
@@ -117,37 +126,59 @@ namespace BakeryAdmin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Vendedor,Cliente")]
         public async Task<IActionResult> Edit(int id, Orden model)
         {
-            if (id != model.OrdenId) return BadRequest();
-            if (!ModelState.IsValid) return View(model);
-            model.Total = model.Items?.Sum(i => i.PrecioUnitario * i.Cantidad) ?? 0;
+            if (id != model.OrdenId) 
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid) 
+            {
+                return View(model);
+            }
+            //model.Total = model.Items?.Sum(i => i.PrecioUnitario * i.Cantidad) ?? 0;
             _db.Ordenes.Update(model);
             await _db.SaveChangesAsync();
-            TempData["SuccessMessage"] = "El registro se guard� correctamente.";
+            TempData["SuccessMessage"] = "El registro se guardo correctamente.";
             CargarViewBags();
             return RedirectToAction("Edit", new { id = model.OrdenId });
         }
 
+        [Authorize(Roles = "Administrador,Repartidor,Panadero,Vendedor,Cliente")]
         public async Task<IActionResult> Details(int id)
         {
-            var p = await _db.Ordenes.Include(x => x.Cliente).AsNoTracking().FirstOrDefaultAsync(x => x.OrdenId == id);
-            if (p == null) return NotFound();
+            var p = await _db.Ordenes.Include(x => x.Cliente).Include(p => p.EntregaDireccionId).Include(p => p.Items).ThenInclude(p => p.Producto).AsNoTracking().FirstOrDefaultAsync(x => x.OrdenId == id);
+
+            if (p == null) 
+            {
+                return NotFound();
+            }
+
             return View(p);
         }
 
+        [Authorize(Roles = "Administrador,Vendedor")]
         public async Task<IActionResult> Delete(int id)
         {
             var p = await _db.Ordenes.FindAsync(id);
-            if (p == null) return NotFound();
+
+            if (p == null) 
+            {
+                return NotFound();
+            }
             return View(p);
         }
 
+        [Authorize(Roles = "Administrador,Vendedor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var orden = await _db.Ordenes.FindAsync(id);
             if (orden == null)
+            {
                 return Json(new { success = false, message = "No encontrado" });
+            }
 
             _db.Ordenes.Remove(orden);
             await _db.SaveChangesAsync();
@@ -159,14 +190,15 @@ namespace BakeryAdmin.Controllers
         {
             var orden = await _db.OrdenItems.FindAsync(id);
             if (orden == null)
+            {
                 return Json(new { success = false, message = "No encontrado" });
-
+            }
             _db.OrdenItems.Remove(orden);
             await _db.SaveChangesAsync();
 
             return Json(new { success = true });
         }
-
+/*
         public IActionResult EditItem(int id)
         {
             var item = _db.OrdenItems
@@ -177,7 +209,7 @@ namespace BakeryAdmin.Controllers
 
             return PartialView("_EditItemModal", item);
         }
-
+*/
         [HttpPost]
         public IActionResult UpdateItem(OrdenItem model)
         {
@@ -197,6 +229,7 @@ namespace BakeryAdmin.Controllers
         {
             var items = _db.OrdenItems
                 .Include(x => x.Producto)
+                .Include(x => x.Orden)
                 .Where(x => x.OrdenId == ordenId)
                 .ToList();
 
@@ -208,28 +241,73 @@ namespace BakeryAdmin.Controllers
         public IActionResult AgregarProducto(OrdenItem model)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest("Datos invalidos");
-
+            }
             // Guardar en base de datos
             model.Subtotal = model.PrecioUnitario * model.Cantidad;
-            _db.OrdenItems.Add(model);
-
-            var orden = _db.Ordenes.Include(p => p.Items).FirstOrDefault(p => p.OrdenId == model.OrdenId);
-            if (orden == null)
-                return BadRequest("Orden no encontrada");
-
-            var existingSum = orden.Items?.Sum(p => p.Subtotal) ?? 0m;
-            orden.Total = model.Subtotal + existingSum;
-            _db.Ordenes.Update(orden);
+            //Validaciones para agregar un producto
+            if (model.OrdenItemId == 0)
+            {
+                _db.OrdenItems.Add(model);
+            }
+            else
+            {
+                _db.OrdenItems.Update(model);
+            }
 
             _db.SaveChanges();
 
-            // Retornar la tabla actualizada como partial
-            var ordenItems = _db.OrdenItems.Include(p => p.Producto).AsNoTracking()
+            //Recalcular total de la orden
+            var orden = _db.Ordenes
+                .Include(p => p.Items)
+                .First(p => p.OrdenId == model.OrdenId);
+            
+            _db.Ordenes.Update(orden);
+            _db.SaveChanges();
+
+            // Retornar tabla actualizada
+            var ordenItems = _db.OrdenItems
+                .Include(p => p.Producto)
                 .Where(x => x.OrdenId == model.OrdenId)
+                .AsNoTracking()
+                .ToList();
+            return PartialView("_ListaProductos", ordenItems);
+
+        }
+
+        public IActionResult ObtenerItem(int id)
+        {
+            var item = _db.OrdenItems.FirstOrDefault(x => x.OrdenItemId == id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            return Json(new
+            {
+                item.OrdenItemId,
+                item.ProductoId,
+                item.Cantidad,
+                item.PrecioUnitario,
+                item.Descuento,
+                item.Subtotal
+            });
+        }
+
+        [HttpGet]
+        public JsonResult GetDireccionesByClientes(int personaId)
+        {
+            var direcciones = _db.Direcciones
+                .Where(d => d.PersonaId == personaId)
+                .Select(d => new
+                {
+                    d.DireccionId,
+                    Descripcion = d.Zona! + " " + d.Calle! + " " + d.Numero!
+                })
                 .ToList();
 
-            return PartialView("_ListaProductos", ordenItems);
+            return Json(direcciones);
         }
     }
 }

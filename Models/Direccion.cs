@@ -10,6 +10,7 @@ namespace BakeryAdmin.Models
         public string? Numero { get; set; }
         public string? NombreEdificio { get; set; }
         public string? Referencia { get; set; }
+        public string? Ubicacion { get; set; }
         public bool Activo { get; set; } = true;
     }
 }

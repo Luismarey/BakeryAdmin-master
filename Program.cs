@@ -13,9 +13,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    // Configuraciones de contrase√±a
+    options.Password.RequireDigit = false;   //No requiere numeros
+    options.Password.RequiredLength = 1;    //Minimo 1 caracter
+    options.Password.RequireNonAlphanumeric = false;  //No requiere simbolos
+    options.Password.RequireUppercase = false;  //No requiere mayusculas
+    options.Password.RequireLowercase = false;  //No requiere minusculas
+    options.Password.RequiredUniqueChars = 0;  //No requiere caracteres unicos
+})
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login"; //redirigir al login si no es autenticado
+    options.AccessDeniedPath = "/Account/AccessDenied"; //redirigir si no tiene permiso
+});
 
 builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation()
@@ -43,7 +58,7 @@ using (var scope = app.Services.CreateScope())
     // Seed roles
     var roleMgr = services.GetRequiredService<RoleManager<IdentityRole>>();
     var userMgr = services.GetRequiredService<UserManager<ApplicationUser>>();
-    string[] roles = new[] { "Administrator", "Cliente", "Baker", "Delivery", "Seller", "Supplier" };
+    string[] roles = new[] { "Administrator", "Cliente", "Panadero", "Repartidor", "Vendedor" };
     foreach (var r in roles)
     {
         if (!await roleMgr.RoleExistsAsync(r)) await roleMgr.CreateAsync(new IdentityRole(r));
@@ -54,9 +69,39 @@ using (var scope = app.Services.CreateScope())
     var admin = await userMgr.FindByEmailAsync(adminEmail);
     if (admin == null)
     {
-        admin = new ApplicationUser { UserName = "admin", Email = adminEmail, EmailConfirmed = true };
+        admin = new ApplicationUser { UserName = "admin", Email = adminEmail, EmailConfirmed = true, NombreCompleto = "Administrador del Sistema", MustChangePassword = false };
         await userMgr.CreateAsync(admin, "Admin#1234");
         await userMgr.AddToRoleAsync(admin, "Administrator");
+    }
+
+    //Cliente
+    var clienteEmail = "cliente@bakery.local";
+    var cliente = await userMgr.FindByEmailAsync(clienteEmail);
+    if(cliente == null)
+    {
+        cliente = new ApplicationUser { UserName = "cliente", Email = clienteEmail, EmailConfirmed = true, NombreCompleto = "Usuario Cliente", MustChangePassword = false };
+        await userMgr.CreateAsync(cliente, "Cliente#123");
+        await userMgr.AddToRoleAsync(cliente, "Cliente");
+    }
+
+    //Panadero
+    var panaderoEmail = "panadero@bakery.local";
+    var panadero = await userMgr.FindByEmailAsync(panaderoEmail);
+    if (panadero == null) 
+    {
+        panadero = new ApplicationUser { UserName = "panadero", Email = panaderoEmail, EmailConfirmed = true, NombreCompleto = "Usuario Panadero", MustChangePassword = false };
+        await userMgr.CreateAsync(panadero, "Panadero#123");
+        await userMgr.AddToRoleAsync(panadero, "Panadero");
+    }
+
+    //Repartidor
+    var repartidorEmail = "repartidor@bakery.local";
+    var repartidor = await userMgr.FindByEmailAsync(repartidorEmail);
+    if (repartidor == null)
+    {
+        repartidor = new ApplicationUser { UserName = "repartidor", Email = repartidorEmail, EmailConfirmed = true, NombreCompleto = "Usuario Repartidor", MustChangePassword = false };
+        await userMgr.CreateAsync(repartidor, "Repartidor#123");
+        await userMgr.AddToRoleAsync(repartidor, "Repartidor");
     }
 }
 
@@ -83,7 +128,7 @@ if (app.Environment.IsDevelopment())
 // Endpoint simple de salud
 app.MapGet("/health", () => Results.Text("OK"));
 
-// Endpoint temporal que lista endpoints registrados (˙til para diagnosticar rutas)
+// Endpoint temporal que lista endpoints registrados (util para diagnosticar rutas)
 app.MapGet("/routes", (EndpointDataSource ds) =>
 {
     var lines = ds.Endpoints

@@ -1,0 +1,26 @@
+@using BakeryAdmin.Models.ViewModels
+
+@model RolesModels
+
+<h2>Roles de @Model.Email</h2>
+
+<form asp-action="AssignRoles">
+    <input type="hidden" asp-for="UserId" />
+
+    @foreach (var r in Model.Roles)
+    {
+        <div class="form-check">
+            <input class="form-check-input"
+                   type="checkbox"
+                   name="Roles[@Model.Roles.IndexOf(r)].IsSelected"
+                   value="true"
+            @(r.IsSelected ? "checked" : "") />
+
+            <label>@r.NombreRol</label>
+
+            <input type="hidden" name="Roles[@Model.Roles.IndexOf(r)].RoleName" value="@r.NombreRol" />
+        </div>
+    }
+
+    <button class="btn btn-primary mt-3">Guardar Roles</button>
+</form>

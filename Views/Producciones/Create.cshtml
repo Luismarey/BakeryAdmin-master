@@ -18,6 +18,13 @@
                 <span asp-validation-for="ProductoId" class="text-danger"></span>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="CantidadProducida" class="form-control" placeholder="Cantidad Producida" required />
+                <label asp-for="CantidadProducida">Cantidad Producida</label>
+                <span asp-validation-for="CantidadProducida" class="text-danger"></span>
+            </div>
+        </div>
     </div>
 
     <div class="row g-3 mb-3">
@@ -39,12 +46,11 @@
     </div>
 
     <div class="row g-3 mb-3">
-
         <div class="col-md-6">
             <div class="form-floating">
-                <input asp-for="CantidadProducida" class="form-control" placeholder="Cantidad Producida" required />
-                <label asp-for="CantidadProducida">Cantidad Producida</label>
-                <span asp-validation-for="CantidadProducida" class="text-danger"></span>
+                <input asp-for="DiasValidos" class="form-control" placeholder="Dias Validos" required readonly />
+                <label asp-for="DiasValidos">Dias Validos</label>
+                <span asp-validation-for="DiasValidos" class="text-danger"></span>
             </div>
         </div>
         <div class="col-md-6">
@@ -84,6 +90,24 @@
                 autoclose: true,
                 todayHighlight: true
             });
+
+            // Función para calcular días
+            function calcularDias() {
+                const fechaProduccion = $('#FechaProduccion').datepicker('getDate');
+                const fechaVencimiento = $('#FechaVencimiento').datepicker('getDate');
+
+                if (fechaProduccion && fechaVencimiento) {
+                    const diffTime = fechaVencimiento - fechaProduccion;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // diferencia en días
+                    $('#DiasValidos').val(diffDays >= 0 ? diffDays : 0);
+                } else {
+                    $('#DiasValidos').val('');
+                }
+            }
+
+            // Llamar a la función cada vez que cambie alguna fecha
+            $('#FechaProduccion, #FechaVencimiento').on('changeDate', calcularDias);
+
         });
 
         (() => {

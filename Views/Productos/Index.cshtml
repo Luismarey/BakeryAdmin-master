@@ -19,90 +19,92 @@
             <input id="search" type="text" class="form-control" placeholder="Buscar por nombre, categoria o descripcion...">
         </div>
         <div class="table-responsive">
-        <table id="tablaProductos" class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Categoria</th>
-                    <th>Descripcion</th>
-                    <th>Fotografia</th>
-                    <th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
+            <table id="tablaProductos" class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Descripción</th>
+                        <th>Fotografía</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @foreach (var p in Model)
                     {
-                            <tr data-id="@p.ProductoId">
-                                <td>@($"{p.Nombre}")</td>
-                                <td>@p.Categoria</td>
-                                <td>@p.Descripcion</td>
-                                <td>
+                        <tr data-id="@p.ProductoId">
+                            <td>@($"{p.Nombre}")</td>
+                            <td>@p.Categoria</td>
+                            <td>@p.Precio</td>
+                            <td>@p.Descripcion</td>
+                            <td>
                                 @if (!string.IsNullOrEmpty(p.Fotografia))
                                 {
-                                                <img src="~/uploads/@p.Fotografia" class="img-thumbnail" style="max-width:50px; max-height:50px;" />
+                                    <img src="~/uploads/@p.Fotografia" class="img-thumbnail" style="max-width:50px; max-height:50px;" />
                                 }
-                                </td>
-                                <td class="text-end">
-                                    <a class="btn btn-sm btn-outline-info" href="/Productos/Details/@p.ProductoId">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                    <a class="btn btn-sm btn-outline-secondary" href="/Productos/Edit/@p.ProductoId">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <button class="btn btn-sm btn-outline-danger btn-delete" title="Eliminar">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-info" href="/Productos/Details/@p.ProductoId">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Productos/Edit/@p.ProductoId">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger btn-delete" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
                     }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 @section Scripts {
-            <script>
-                document.getElementById('search').addEventListener('keyup', function () {
-                    let value = this.value.toLowerCase();
-                    document.querySelectorAll('#tablaProductos tbody tr').forEach(row => {
-                        row.style.display = row.innerText.toLowerCase().includes(value) ? '' : 'none';
-                    });
-                });
-            </script>
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    document.querySelectorAll(".btn-delete").forEach(btn => {
-                        btn.addEventListener("click", function () {
-                            let tr = this.closest("tr");
-                            let id = tr.getAttribute("data-id");
-                            Swal.fire({
-                                title: "¿Eliminar registro?",
-                                text: "Esta acción no se puede deshacer.",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonText: "Sí, eliminar",
-                                cancelButtonText: "Cancelar"
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    fetch(`/Productos/DeleteConfirmed/${id}`, {
-                                        method: "POST"
-                                    })
-                                    .then(r => r.json())
-                                    .then(res => {
-                                            if (res.success) {
-                                                tr.remove();
-                                                Swal.fire("Eliminado", "El producto fue eliminada.", "success");
-                                            } else {
-                                                Swal.fire("Error", res.message, "error");
-                                            }
-                                    });
-                                }
+    <script>
+        document.getElementById('search').addEventListener('keyup', function () {
+            let value = this.value.toLowerCase();
+            document.querySelectorAll('#tablaProductos tbody tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(value) ? '' : 'none';
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".btn-delete").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    let tr = this.closest("tr");
+                    let id = tr.getAttribute("data-id");
+                    Swal.fire({
+                        title: "¿Eliminar registro?",
+                        text: "Esta acción no se puede deshacer.",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Sí, eliminar",
+                        cancelButtonText: "Cancelar"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/Productos/DeleteConfirmed/${id}`, {
+                                method: "POST"
+                            })
+                            .then(r => r.json())
+                            .then(res => {
+                                    if (res.success) {
+                                        tr.remove();
+                                        Swal.fire("Eliminado", "El producto fue eliminada.", "success");
+                                    } else {
+                                        Swal.fire("Error", res.message, "error");
+                                    }
                             });
-
-                        });
+                        }
                     });
 
                 });
-            </script>
+            });
+
+        });
+    </script>
 }

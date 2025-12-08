@@ -10,16 +10,16 @@ namespace BakeryAdmin.Models
 
         [Required(ErrorMessage = "El nombre es Obligatorio.")]
         [StringLength(40, ErrorMessage = "No puede superar los 40 caracteres.")]
-        public string Nombres { get; set; }
+        public string Nombres { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El apellido es Obligatorio.")]
         [StringLength(40, ErrorMessage = "No puede superar los 40 caracteres.")]
-        public string Apellidos { get; set; }
+        public string Apellidos { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El numero de Celular es Obligatorio.")]
         [StringLength(15, MinimumLength = 8, ErrorMessage = "Debe tener entre 8 y 15 dígitos.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "Solo se permiten números.")]
-        public string NumCelular { get; set; } = string.Empty;
+        public string NumCelular { get; set; }
 
         [StringLength(15, ErrorMessage = "No puede superar los 15 caracteres.")]
         public string? NumCi { get; set; }

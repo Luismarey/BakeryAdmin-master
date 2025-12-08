@@ -9,12 +9,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
         body {
             background-color: #fffaf2;
             font-family: "Segoe UI", sans-serif;
             background: #faf6f1;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Header */
@@ -55,13 +58,26 @@
             margin-top: 20px;
         }
 
-            .hero-banner h1 {
-                background: rgba(255, 255, 255, 0.85);
-                padding: 8px 22px;
-                border-radius: 12px;
-                color: #6a3e1f;
-                font-family: "Georgia", serif;
-            }
+        .hero-text h1 {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            color: #6a3e1f;
+            font-family: "Georgia", serif;
+            justify-content: center;
+            display: flex;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        main, .container.my-4 {
+            flex: 1;
+        }
+
+        footer {
+            flex-shrink: 0;
+        }
     </style>
 </head>
 
@@ -73,12 +89,15 @@
                 <img src="/img/logo-horizontal.png" alt="Migas de Amor" height="90" class="me-3" />
             </div>
 
-            <a class="btn btn-sm btn-outline-danger" href="/Account/Logout">
-                <i class="fa fa-sign-out-alt"></i> Salir
-            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="fa fa-sign-out-alt"></i> Salir
+                </button>
+            </form>
         </div>
     </header>
 
+    <!-- Menú -->
     <!-- Menú -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
         <div class="container">
@@ -88,19 +107,54 @@
 
             <div class="collapse navbar-collapse" id="mainMenu">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path == "/" ? "active" : "")" href="/"><i class="fa-solid fa-house"></i> </a></li>
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Personas") ? "active" : "")" href="/Personas"><i class="fa-solid fa-users"></i> Personas</a></li>
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Productos") ? "active" : "")" href="/Productos"><i class="fa-solid fa-bread-slice"></i> Productos</a></li>
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Ordenes") ? "active" : "")" href="/Ordenes"><i class="fa-solid fa-file-invoice"></i> Órdenes</a></li>
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Entregas") ? "active" : "")" href="/Entregas"><i class="fa-solid fa-truck"></i> Entregas</a></li>
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Producciones") ? "active" : "")" href="/Producciones"><i class="fa-solid fa-industry"></i> Producción</a></li>
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Cuentas") ? "active" : "")" href="/Cuentas"><i class="fa-solid fa-wallet"></i> Cuentas</a></li>
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Direcciones") ? "active" : "")" href="/Direcciones"><i class="fa-solid fa-location-dot"></i> Direcciones</a></li>
-                    <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Reportes") ? "active" : "")" href="/Reportes"><i class="fa-solid fa-chart-column"></i> Reportes</a></li>
+
+                    <li class="nav-item"><a class="nav-link @(Context.Request.Path == "/" ? "active" : "")" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house me-1"></i> Inicio</a></li>
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Repartidor") || User.IsInRole("Vendedor"))
+                    {
+                        <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Personas") ? "active" : "")" asp-controller="Personas" asp-action="Index"><i class="fa-solid fa-users me-1"></i> Personas</a></li>
+                    }
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Cliente") || User.IsInRole("Panadero") || User.IsInRole("Vendedor"))
+                    {
+                        <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Productos") ? "active" : "")" asp-controller="Productos" asp-action="Index"><i class="fa-solid fa-bread-slice me-1"></i> Productos</a></li>
+                    }
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Repartidor") || User.IsInRole("Panadero") || User.IsInRole("Vendedor") || User.IsInRole("Cliente"))
+                    {
+                        <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Ordenes") ? "active" : "")" asp-controller="Ordenes" asp-action="Index"><i class="fa-solid fa-file-invoice me-1"></i> Órdenes</a></li>
+                    }
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Repartidor"))
+                    {
+                        <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Entregas") ? "active" : "")" asp-controller="Entregas" asp-action="Index"><i class="fa-solid fa-truck me-1"></i> Entregas</a></li>
+                    }
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Panadero"))
+                    {
+                        <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Producciones") ? "active" : "")" asp-controller="Producciones" asp-action="Index"><i class="fa-solid fa-industry me-1"></i> Producción</a></li>
+                    }
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Cuentas") ? "active" : "")" asp-controller="Cuentas" asp-action="Index"><i class="fa-solid fa-wallet me-1"></i> Cuentas</a></li>
+                    }
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-chart-column me-1"></i> Reportes
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Reportes" asp-action="Reporte1">Reporte Entregas</a></li>
+                                <li><a class="dropdown-item" asp-controller="Reportes" asp-action="Reporte2">Reporte Producción / Ventas</a></li>
+                            </ul>
+                        </li>
+                    }
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/UserAdmin") ? "active" : "")" asp-controller="UserAdmin" asp-action="Index"><i class="fa-solid fa-users-cog me-1"></i> Seguridad</a></li>
+                    }
+
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <!-- Banner -->
     @{
@@ -112,6 +166,8 @@
     {
         <div class="container mt-4">
             <div class="hero-banner">
+            </div>
+            <div class="hero-text">
                 <h1>Pan fresco hecho con amor ❤</h1>
             </div>
         </div>
@@ -121,13 +177,19 @@
     <div class="container my-4">
         @RenderBody()
     </div>
-
+    @if (currentPath == "/" || currentPath == "/home" || currentPath == "/home/index")
+    {
+        <!-- Footer -->
+        <footer class="bg-light text-center text-muted py-3 mt-4 border-top">
+            &copy; 2025 Todos los derechos reservados MIGAS DE AMOR | Central, Agencia Brasil, Av. Brasil Calle 1 | Telf. (591 3) 348-7070 | e-mail: info@migasdeamor.com |
+        </footer>
+    }
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

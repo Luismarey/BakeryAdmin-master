@@ -1,11 +1,13 @@
 using BakeryAdmin.Data;
 using BakeryAdmin.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BakeryAdmin.Controllers
 {
+    [Authorize(Roles = "Administrador, Panadero")]
     public class ProduccionesController : Controller
     {
         private readonly AppDbContext _db;
@@ -44,7 +46,7 @@ namespace BakeryAdmin.Controllers
 
                 _db.Producciones.Add(model);
                 await _db.SaveChangesAsync();
-                TempData["SuccessMessage"] = "El registro se guard� correctamente.";
+                TempData["SuccessMessage"] = "El registro se guardo correctamente.";
                 return RedirectToAction("Edit", new { id = model.ProduccionId });
             }
             return View(model);
@@ -53,7 +55,10 @@ namespace BakeryAdmin.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var p = await _db.Producciones.FindAsync(id);
-            if (p == null) return NotFound();
+            if (p == null) 
+            {
+                return NotFound();
+            }
 
             ViewBag.Productos = _db.Productos.Select(p => new SelectListItem
             {
@@ -68,8 +73,15 @@ namespace BakeryAdmin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Produccion model)
         {
-            if (id != model.ProduccionId) return BadRequest();
-            if (!ModelState.IsValid) return View(model);
+            if (id != model.ProduccionId) 
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid) 
+            {
+                return View(model);
+            }
 
             model.CantidadDisponible = model.CantidadProducida;
 
@@ -77,21 +89,29 @@ namespace BakeryAdmin.Controllers
 
             _db.Producciones.Update(model);
             await _db.SaveChangesAsync();
-            TempData["SuccessMessage"] = "El registro se guard� correctamente.";
+            TempData["SuccessMessage"] = "El registro se guardo correctamente.";
             return RedirectToAction("Edit", new { id = model.ProduccionId });
         }
 
         public async Task<IActionResult> Details(int id)
         {
             var p = await _db.Producciones.Include(p => p.Producto).FirstOrDefaultAsync(x => x.ProduccionId == id);
-            if (p == null) return NotFound();
+            if (p == null) 
+            {
+                return NotFound();
+            }
+
             return View(p);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             var p = await _db.Producciones.FindAsync(id);
-            if (p == null) return NotFound();
+            if (p == null) 
+            {
+                return NotFound();
+            }
+
             return View(p);
         }
 
@@ -99,7 +119,9 @@ namespace BakeryAdmin.Controllers
         {
             var persona = await _db.Producciones.FindAsync(id);
             if (persona == null)
+            {
                 return Json(new { success = false, message = "No encontrado" });
+            }
 
             _db.Producciones.Remove(persona);
             await _db.SaveChangesAsync();

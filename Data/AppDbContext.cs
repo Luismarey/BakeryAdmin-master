@@ -29,7 +29,9 @@ namespace BakeryAdmin.Data
 
             // Configuracion de la herencia para PersonaBase
             builder.Entity<PersonaBase>()
-                .HasKey(p => p.PersonaId);
+                .HasMany(p => p.Direcciones)
+                .WithOne(d => (PersonaBase)d.Persona)
+                .HasForeignKey(p => p.PersonaId);
 
             // Configuracion del Discriminador    
             builder.Entity<PersonaBase>()
@@ -39,12 +41,6 @@ namespace BakeryAdmin.Data
                 .HasValue<Empleado>(Enums.TipoPersona.Empleado)
                 .HasValue<Proveedor>(Enums.TipoPersona.Proveedor)
                 .HasValue<Vendedor>(Enums.TipoPersona.Vendedor);
-
-            // Relacion uno a muchos entre PersonaBase y Direccion    
-            builder.Entity<PersonaBase>()
-                .HasMany(p => p.Direcciones)
-                .WithOne(o => (PersonaBase)o.Persona)
-                .HasForeignKey(o => o.PersonaId);
 
             // Configuracion global para propiedades decimal
             foreach (var property in builder.Model.GetEntityTypes()
@@ -227,6 +223,129 @@ namespace BakeryAdmin.Data
                     }
 
                 );
+            // Datos iniciales para Direcciones
+            builder.Entity<Direccion>().HasData
+            (
+                new Direccion
+                {
+                    DireccionId = 1,
+                    PersonaId = 1,
+                    Zona = "Centro",
+                    Calle = "Chacra",
+                    Numero = "123",
+                    NombreEdificio = "Edificio Sol",
+                    Referencia = "Cerca del parque",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 2,
+                    PersonaId = 2,
+                    Zona = "Norte",
+                    Calle = "Las Flores",
+                    Numero = "456",
+                    NombreEdificio = "Residencial Luna",
+                    Referencia = "Frente a la plaza",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 3,
+                    PersonaId = 3,
+                    Zona = "Sur",
+                    Calle = "Av. Siempre Viva",
+                    Numero = "789",
+                    NombreEdificio = "Condominio Estrella",
+                    Referencia = "Al lado del supermercado",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 4,
+                    PersonaId = 4,
+                    Zona = "Este",
+                    Calle = "Los Pinos",
+                    Numero = "321",
+                    NombreEdificio = "Torre Cielo",
+                    Referencia = "Detras de la iglesia",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 5,
+                    PersonaId = 5,
+                    Zona = "Oeste",
+                    Calle = "El Sol",
+                    Numero = "654",
+                    NombreEdificio = "Villa Primavera",
+                    Referencia = "Cerca de la escuela",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 6,
+                    PersonaId = 6,
+                    Zona = "Centro",
+                    Calle = "Santa Cruz",
+                    Numero = "987",
+                    NombreEdificio = "Residencial Arcoiris",
+                    Referencia = "Frente al hospital",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 7,
+                    PersonaId = 7,
+                    Zona = "Norte",
+                    Calle = "Los Olivos",
+                    Numero = "159",
+                    NombreEdificio = "Edificio Horizonte",
+                    Referencia = "Al lado del banco",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 8,
+                    PersonaId = 8,
+                    Zona = "Sur",
+                    Calle = "El Cedro",
+                    Numero = "753",
+                    NombreEdificio = "Condominio Mar",
+                    Referencia = "Cerca del centro comercial",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 9,
+                    PersonaId = 9,
+                    Zona = "Este",
+                    Calle = "La Paz",
+                    Numero = "852",
+                    NombreEdificio = "La Radial",
+                    Referencia = "Detras del parque",
+                    Ubicacion = ""
+                },
+
+                new Direccion
+                {
+                    DireccionId = 10,
+                    PersonaId = 10,
+                    Zona = "Oeste",
+                    Calle = "El Roble",
+                    Numero = "456",
+                    NombreEdificio = "Villa Verde",
+                    Referencia = "Frente a la plaza central",
+                    Ubicacion = ""
+                }
+            );
 
             //Datos iniciales para Productos
             builder.Entity<Producto>().HasData
@@ -298,7 +417,7 @@ namespace BakeryAdmin.Data
                 new Produccion
                 {
                     ProduccionId = 1,
-                    ProductoId = 1, // Pan Franc�s
+                    ProductoId = 1, // Pan Frances
                     NumeroProduccion = "PRD-001",
                     FechaProduccion = new DateTime(2025, 1, 10),
                     FechaVencimiento = new DateTime(2025, 1, 12),
@@ -350,7 +469,7 @@ namespace BakeryAdmin.Data
                 new Produccion
                 {
                     ProduccionId = 5,
-                    ProductoId = 5, // Caf� Americano
+                    ProductoId = 5, // Cafe Americano
                     NumeroProduccion = "PRD-005",
                     FechaProduccion = new DateTime(2025, 1, 10),
                     FechaVencimiento = new DateTime(2025, 1, 20),
