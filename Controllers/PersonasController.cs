@@ -15,7 +15,9 @@ namespace BakeryAdmin.Controllers
         private readonly AppDbContext _db;
 
         public PersonasController(AppDbContext db)
-        { _db = db; }
+        { 
+            _db = db; 
+        }
 
         [Authorize(Roles = "Administrador,Vendedor,Repartidor")]
         public async Task<IActionResult> Index()
@@ -35,20 +37,21 @@ namespace BakeryAdmin.Controllers
                                        }).ToList();
         }
 
-        [Authorize(Roles = "Administrador,Vendedor")]
+       
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             ViewBag.TiposPersona = CargarTipos();
 
-            var model = new Empleado("", "", "");
+            var model = new PersonaBase("", "", "");
 
             return View(model);
         }
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Vendedor")]
-        public async Task<IActionResult> Create(Empleado model) 
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Create(PersonaBase model) 
         {
             if (!ModelState.IsValid)
             {
@@ -133,7 +136,7 @@ namespace BakeryAdmin.Controllers
 
         }
 
-        [Authorize(Roles = "Administrador,Vendedor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id)
         {
             var p = await _db.Personas.Include(p => p.Direcciones).AsNoTracking().FirstOrDefaultAsync(p => p.PersonaId == id);
@@ -149,7 +152,7 @@ namespace BakeryAdmin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Vendedor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id, PersonaBase model)
         {
             if (id != model.PersonaId) 
@@ -169,7 +172,8 @@ namespace BakeryAdmin.Controllers
             return RedirectToAction("Edit", new { id = model.PersonaId });
         }
 
-        [Authorize(Roles = "Administrador,Vendedor, Repartidor")]
+        // Details puede permitir ver a Administrator, Vendedor y Repartidor (según negocio)
+        [Authorize(Roles = "Administrador,Vendedor,Repartidor")]
         public async Task<IActionResult> Details(int id)
         {
             var p = await _db.Personas.Include(x => x.Direcciones).AsNoTracking().FirstOrDefaultAsync(x => x.PersonaId == id);
@@ -181,7 +185,7 @@ namespace BakeryAdmin.Controllers
             return View(p);
         }
 
-        [Authorize(Roles = "Administrador,Vendedor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var p = await _db.Personas.FindAsync(id);
@@ -193,7 +197,7 @@ namespace BakeryAdmin.Controllers
             return View(p);
         }
 
-        [Authorize(Roles = "Administrador,Vendedor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var persona = await _db.Personas.FindAsync(id);

@@ -28,45 +28,47 @@ namespace BakeryAdmin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+
             // Buscar al usuario por su Email
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if(user != null)
+            if (user != null)
             {
-                //Iniciar sesion usando el UserName real;
+                // Iniciar sesión usando el UserName real
                 var result = await _signInManager.PasswordSignInAsync(
                     user.UserName,
                     model.Password,
                     model.RememberMe,
                     lockoutOnFailure: false
                 );
-                
-                if(result.Succeeded)
+
+                if (result.Succeeded)
                 {
-                    if(user.MustChangePassword)
+                    if (user.MustChangePassword)
                     {
                         return RedirectToAction("ChangePasswordFirstTime", "Account", new { userId = user.Id });
                     }
                     else
                     {
-                        if(!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                         {
                             return Redirect(returnUrl);
                         }
-                        return RedirectToAction("Index", "Home");                        }
+
+                        return RedirectToAction("Index", "Home");
                     }
                 }
             }
-            // Aqui el login fallo
+
+            // Aquí el login falló
             ModelState.AddModelError(string.Empty, "Usuario o contraseña incorrectos.");
-            return View(Model);
+            return View(model);
         }
         
         [HttpPost]
@@ -79,7 +81,7 @@ namespace BakeryAdmin.Controllers
 
         private IActionResult RedirectToLocal(string returnUrl)
         {
-            if(Url.IsLocalUrl(returnUrl))
+            if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
@@ -92,12 +94,12 @@ namespace BakeryAdmin.Controllers
         [HttpGet]
         public IActionResult ChangePasswordFirstTime(string userId)
         {
-            var model = new ChangePasswordViewModel { userId = userId };
+            var model = new ContraseñaModels { UserId = userId };
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePasswordFirstTime(ChangePasswordViewModel model) 
+        public async Task<IActionResult> ChangePasswordFirstTime(ContraseñaModels model) 
         {
             if (!ModelState.IsValid) 
             {
@@ -133,11 +135,11 @@ namespace BakeryAdmin.Controllers
         }
 
         [HttpGet]
-        public IActionResult AcessDenied(string returnUrl = null)
+        public IActionResult AccessDenied(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
-        
+
     }
 }

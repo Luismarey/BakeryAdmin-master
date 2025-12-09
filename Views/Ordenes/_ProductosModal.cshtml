@@ -5,14 +5,13 @@
         <div class="modal-content">
             <div class="modal-header bg-light">
                 <h5 class="modal-title">Administrar Producto</h5>
-                <label>@Model.OrdenItemId</label>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <form id="productoForm" method="post" novalidate>
+                <form id="productoForm" method="post" class="needs-validation" novalidate>
                     <!-- Campos ocultos -->
-                    
-                    <input asp-for="@Model.OrdenId" type="hidden" />
+                    <input asp-for="OrdenItemId" type="hidden" />
+                    <input asp-for="OrdenId" type="hidden" />
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
@@ -26,7 +25,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
-                                <input asp-for="Cantidad" class="form-control" name="Cantidad" placeholder="Cantidad" required />
+                                <input asp-for="Cantidad" type="number" class="form-control" placeholder="Cantidad" required />
                                 <label asp-for="Cantidad">Cantidad</label>
                                 <span asp-validation-for="Cantidad" class="text-danger"></span>
                             </div>
@@ -36,21 +35,21 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <div class="form-floating">
-                                <input asp-for="PrecioUnitario" class="form-control" name="PrecioUnitario" placeholder="Precio Unitario" required />
+                                <input asp-for="PrecioUnitario" type="number" step="0.01" class="form-control" placeholder="Precio Unitario" required />
                                 <label asp-for="PrecioUnitario">Precio Unitario</label>
                                 <span asp-validation-for="PrecioUnitario" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating">
-                                <input asp-for="Descuento" class="form-control" name="Descuento" placeholder="Descuento" />
+                                <input asp-for="Descuento" type="number" step="0.01" class="form-control" placeholder="Descuento" />
                                 <label asp-for="Descuento">Descuento</label>
                                 <span asp-validation-for="Descuento" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating">
-                                <input asp-for="Subtotal" class="form-control" name="Subtotal" placeholder="Sub total" required />
+                                <input asp-for="Subtotal" type="number" step="0.01" class="form-control" placeholder="Sub total" readonly />
                                 <label asp-for="Subtotal">Sub total</label>
                                 <span asp-validation-for="Subtotal" class="text-danger"></span>
                             </div>
@@ -70,3 +69,49 @@
         </div>
     </div>
 </div>
+
+<script>
+    (function () {
+        'use strict';
+
+        // Validación de formularios Bootstrap
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Cálculo automático del subtotal
+        const productoForm = document.getElementById('productoForm');
+        if (productoForm) {
+            const cantidad = productoForm.querySelector('[name="Cantidad"]');
+            const precioUnitario = productoForm.querySelector('[name="PrecioUnitario"]');
+            const descuento = productoForm.querySelector('[name="Descuento"]');
+            const subtotal = productoForm.querySelector('[name="Subtotal"]');
+
+            function calcularSubtotal() {
+                const cant = parseFloat(cantidad?.value) || 0;
+                const precio = parseFloat(precioUnitario?.value) || 0;
+                const desc = parseFloat(descuento?.value) || 0;
+
+                const subtotalCalculado = (cant * precio) - desc;
+                if (subtotal) {
+                    subtotal.value = subtotalCalculado.toFixed(2);
+                }
+            }
+
+            // Calcular subtotal cuando cambien los valores
+            cantidad?.addEventListener('input', calcularSubtotal);
+            precioUnitario?.addEventListener('input', calcularSubtotal);
+            descuento?.addEventListener('input', calcularSubtotal);
+
+            // Calcular al cargar si hay valores
+            calcularSubtotal();
+        }
+    })();
+</script>

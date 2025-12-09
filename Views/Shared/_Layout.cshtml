@@ -109,31 +109,31 @@
                 <ul class="navbar-nav me-auto">
 
                     <li class="nav-item"><a class="nav-link @(Context.Request.Path == "/" ? "active" : "")" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house me-1"></i> Inicio</a></li>
-                    @if (User.IsInRole("Administrator") || User.IsInRole("Repartidor") || User.IsInRole("Vendedor"))
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Repartidor") || User.IsInRole("Vendedor"))
                     {
                         <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Personas") ? "active" : "")" asp-controller="Personas" asp-action="Index"><i class="fa-solid fa-users me-1"></i> Personas</a></li>
                     }
-                    @if (User.IsInRole("Administrator") || User.IsInRole("Cliente") || User.IsInRole("Panadero") || User.IsInRole("Vendedor"))
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Cliente") || User.IsInRole("Panadero") || User.IsInRole("Vendedor"))
                     {
                         <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Productos") ? "active" : "")" asp-controller="Productos" asp-action="Index"><i class="fa-solid fa-bread-slice me-1"></i> Productos</a></li>
                     }
-                    @if (User.IsInRole("Administrator") || User.IsInRole("Repartidor") || User.IsInRole("Panadero") || User.IsInRole("Vendedor") || User.IsInRole("Cliente"))
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Repartidor") || User.IsInRole("Panadero") || User.IsInRole("Vendedor") || User.IsInRole("Cliente"))
                     {
                         <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Ordenes") ? "active" : "")" asp-controller="Ordenes" asp-action="Index"><i class="fa-solid fa-file-invoice me-1"></i> Órdenes</a></li>
                     }
-                    @if (User.IsInRole("Administrator") || User.IsInRole("Repartidor"))
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Repartidor"))
                     {
                         <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Entregas") ? "active" : "")" asp-controller="Entregas" asp-action="Index"><i class="fa-solid fa-truck me-1"></i> Entregas</a></li>
                     }
-                    @if (User.IsInRole("Administrator") || User.IsInRole("Panadero"))
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Panadero"))
                     {
                         <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Producciones") ? "active" : "")" asp-controller="Producciones" asp-action="Index"><i class="fa-solid fa-industry me-1"></i> Producción</a></li>
                     }
-                    @if (User.IsInRole("Administrator"))
+                    @if (User.IsInRole("Administrador"))
                     {
                         <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/Cuentas") ? "active" : "")" asp-controller="Cuentas" asp-action="Index"><i class="fa-solid fa-wallet me-1"></i> Cuentas</a></li>
                     }
-                    @if (User.IsInRole("Administrator"))
+                    @if (User.IsInRole("Administrador"))
                     {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -145,7 +145,7 @@
                             </ul>
                         </li>
                     }
-                    @if (User.IsInRole("Administrator"))
+                    @if (User.IsInRole("Administrador"))
                     {
                         <li class="nav-item"><a class="nav-link @(Context.Request.Path.StartsWithSegments("/UserAdmin") ? "active" : "")" asp-controller="UserAdmin" asp-action="Index"><i class="fa-solid fa-users-cog me-1"></i> Seguridad</a></li>
                     }

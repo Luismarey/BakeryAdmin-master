@@ -41,11 +41,20 @@ namespace BakeryAdmin.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("IsActive")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NombreCompleto")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -196,6 +205,9 @@ namespace BakeryAdmin.Migrations
                     b.Property<string>("Referencia")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Ubicacion")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Zona")
                         .HasColumnType("nvarchar(max)");
 
@@ -204,6 +216,128 @@ namespace BakeryAdmin.Migrations
                     b.HasIndex("PersonaId");
 
                     b.ToTable("Direcciones");
+
+                    b.HasData(
+                        new
+                        {
+                            DireccionId = 1,
+                            Activo = true,
+                            Calle = "Chacra",
+                            NombreEdificio = "Edificio Sol",
+                            Numero = "123",
+                            PersonaId = 1,
+                            Referencia = "Cerca del parque",
+                            Ubicacion = "",
+                            Zona = "Centro"
+                        },
+                        new
+                        {
+                            DireccionId = 2,
+                            Activo = true,
+                            Calle = "Las Flores",
+                            NombreEdificio = "Residencial Luna",
+                            Numero = "456",
+                            PersonaId = 2,
+                            Referencia = "Frente a la plaza",
+                            Ubicacion = "",
+                            Zona = "Norte"
+                        },
+                        new
+                        {
+                            DireccionId = 3,
+                            Activo = true,
+                            Calle = "Av. Siempre Viva",
+                            NombreEdificio = "Condominio Estrella",
+                            Numero = "789",
+                            PersonaId = 3,
+                            Referencia = "Al lado del supermercado",
+                            Ubicacion = "",
+                            Zona = "Sur"
+                        },
+                        new
+                        {
+                            DireccionId = 4,
+                            Activo = true,
+                            Calle = "Los Pinos",
+                            NombreEdificio = "Torre Cielo",
+                            Numero = "321",
+                            PersonaId = 4,
+                            Referencia = "Detras de la iglesia",
+                            Ubicacion = "",
+                            Zona = "Este"
+                        },
+                        new
+                        {
+                            DireccionId = 5,
+                            Activo = true,
+                            Calle = "El Sol",
+                            NombreEdificio = "Villa Primavera",
+                            Numero = "654",
+                            PersonaId = 5,
+                            Referencia = "Cerca de la escuela",
+                            Ubicacion = "",
+                            Zona = "Oeste"
+                        },
+                        new
+                        {
+                            DireccionId = 6,
+                            Activo = true,
+                            Calle = "Santa Cruz",
+                            NombreEdificio = "Residencial Arcoiris",
+                            Numero = "987",
+                            PersonaId = 6,
+                            Referencia = "Frente al hospital",
+                            Ubicacion = "",
+                            Zona = "Centro"
+                        },
+                        new
+                        {
+                            DireccionId = 7,
+                            Activo = true,
+                            Calle = "Los Olivos",
+                            NombreEdificio = "Edificio Horizonte",
+                            Numero = "159",
+                            PersonaId = 7,
+                            Referencia = "Al lado del banco",
+                            Ubicacion = "",
+                            Zona = "Norte"
+                        },
+                        new
+                        {
+                            DireccionId = 8,
+                            Activo = true,
+                            Calle = "El Cedro",
+                            NombreEdificio = "Condominio Mar",
+                            Numero = "753",
+                            PersonaId = 8,
+                            Referencia = "Cerca del centro comercial",
+                            Ubicacion = "",
+                            Zona = "Sur"
+                        },
+                        new
+                        {
+                            DireccionId = 9,
+                            Activo = true,
+                            Calle = "La Paz",
+                            NombreEdificio = "La Radial",
+                            Numero = "852",
+                            PersonaId = 9,
+                            Referencia = "Detras del parque",
+                            Ubicacion = "",
+                            Zona = "Este"
+                        },
+                        new
+                        {
+                            DireccionId = 10,
+                            Activo = true,
+                            Calle = "El Roble",
+                            NombreEdificio = "Villa Verde",
+                            Numero = "456",
+                            PersonaId = 10,
+                            Referencia = "Frente a la plaza central",
+                            Ubicacion = "",
+                            Zona = "Oeste"
+                        });
                 });
 
             modelBuilder.Entity("BakeryAdmin.Models.Entrega", b =>
@@ -530,19 +664,19 @@ namespace BakeryAdmin.Migrations
                         new
                         {
                             ProductoId = 1,
-                            Categoria = "Panader�a",
+                            Categoria = "Panaderia",
                             Descripcion = "Pan fresco elaborado diariamente",
                             Disponible = true,
                             Fotografia = "/img/pan-frances.jpg",
-                            Nombre = "Pan Franc�s",
+                            Nombre = "Pan Frances",
                             Precio = 1.50m,
                             Unidad = "Unidad"
                         },
                         new
                         {
                             ProductoId = 2,
-                            Categoria = "Panader�a",
-                            Descripcion = "Cl�sica marraqueta crujiente",
+                            Categoria = "Panaderia",
+                            Descripcion = "Clasica marraqueta crujiente",
                             Disponible = true,
                             Fotografia = "/img/marraqueta.jpg",
                             Nombre = "Marraqueta",
@@ -552,8 +686,8 @@ namespace BakeryAdmin.Migrations
                         new
                         {
                             ProductoId = 3,
-                            Categoria = "Pasteler�a",
-                            Descripcion = "Torta h�meda con cobertura de chocolate",
+                            Categoria = "Pasteleria",
+                            Descripcion = "Torta humeda con cobertura de chocolate",
                             Disponible = true,
                             Fotografia = "/img/torta-chocolate.jpg",
                             Nombre = "Torta de Chocolate",
@@ -563,7 +697,7 @@ namespace BakeryAdmin.Migrations
                         new
                         {
                             ProductoId = 4,
-                            Categoria = "Pasteler�a",
+                            Categoria = "Pasteleria",
                             Descripcion = "Rollo suave con glaseado dulce",
                             Disponible = true,
                             Fotografia = "/img/rollo-canela.jpg",
@@ -575,10 +709,10 @@ namespace BakeryAdmin.Migrations
                         {
                             ProductoId = 5,
                             Categoria = "Bebidas",
-                            Descripcion = "Caf� reci�n pasado",
+                            Descripcion = "Cafe recien pasado",
                             Disponible = true,
                             Fotografia = "/img/cafe-americano.jpg",
-                            Nombre = "Caf� Americano",
+                            Nombre = "Cafe Americano",
                             Precio = 5.00m,
                             Unidad = "Vaso"
                         });

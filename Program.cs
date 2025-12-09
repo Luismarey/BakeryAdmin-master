@@ -29,7 +29,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login"; //redirigir al login si no es autenticado
-    options.AccessDeniedPath = "/Account/AccessDenied"; //redirigir si no tiene permiso
+    options.AccessDeniedPath = "/Account/AccessDenegado"; //redirigir si no tiene permiso
 });
 
 builder.Services.AddControllersWithViews()
@@ -58,7 +58,7 @@ using (var scope = app.Services.CreateScope())
     // Seed roles
     var roleMgr = services.GetRequiredService<RoleManager<IdentityRole>>();
     var userMgr = services.GetRequiredService<UserManager<ApplicationUser>>();
-    string[] roles = new[] { "Administrator", "Cliente", "Panadero", "Repartidor", "Vendedor" };
+    string[] roles = new[] { "Administrador", "Cliente", "Panadero", "Repartidor", "Vendedor" };
     foreach (var r in roles)
     {
         if (!await roleMgr.RoleExistsAsync(r)) await roleMgr.CreateAsync(new IdentityRole(r));
@@ -71,7 +71,7 @@ using (var scope = app.Services.CreateScope())
     {
         admin = new ApplicationUser { UserName = "admin", Email = adminEmail, EmailConfirmed = true, NombreCompleto = "Administrador del Sistema", MustChangePassword = false };
         await userMgr.CreateAsync(admin, "Admin#1234");
-        await userMgr.AddToRoleAsync(admin, "Administrator");
+        await userMgr.AddToRoleAsync(admin, "Administrador");
     }
 
     //Cliente
@@ -102,6 +102,16 @@ using (var scope = app.Services.CreateScope())
         repartidor = new ApplicationUser { UserName = "repartidor", Email = repartidorEmail, EmailConfirmed = true, NombreCompleto = "Usuario Repartidor", MustChangePassword = false };
         await userMgr.CreateAsync(repartidor, "Repartidor#123");
         await userMgr.AddToRoleAsync(repartidor, "Repartidor");
+    }
+
+    //Vendedor
+    var vendedorEmail = "vendedor@bakery.local";
+    var vendedor = await userMgr.FindByEmailAsync(vendedorEmail);
+    if (vendedor == null)
+    {
+        vendedor = new ApplicationUser { UserName = "vendedor", Email = vendedorEmail, EmailConfirmed = true, NombreCompleto = "Usuario Vendedor", MustChangePassword = false };
+        await userMgr.CreateAsync(vendedor, "Vendedor#123");
+        await userMgr.AddToRoleAsync(vendedor, "Vendedor");
     }
 }
 

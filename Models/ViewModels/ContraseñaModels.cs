@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BakeryAdmin.Models.ViewModels;
 
 namespace BakeryAdmin.Models.ViewModels {
     public class ContraseñaModels {

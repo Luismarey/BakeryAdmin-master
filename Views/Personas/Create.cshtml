@@ -1,4 +1,4 @@
-@model BakeryAdmin.Models.Empleado
+@model BakeryAdmin.Models.PersonaBase
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using static BakeryAdmin.Models.Enums
 
@@ -40,15 +40,27 @@
             </div>
         </div>
         
+        <!-- Aquí colocamos Fecha de Nacimiento (antes estaba más abajo). -->
         <div class="col-md-6">
             <div class="form-floating">
-                <input asp-for="NumCi" class="form-control" maxlength="15" placeholder="Carnet de Identidad" />
+                <input asp-for="Fecha_Nacimiento" class="form-control" type="date" placeholder="Fecha_Nacimiento" id="FechaNacimientoField" />
+                <label asp-for="Fecha_Nacimiento">Fecha de Nacimiento</label>
+                <span asp-validation-for="Fecha_Nacimiento" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Campo CI ocultable: solo se mostrará cuando TipoPersona == Empleado -->
+    <div id="ci-block" style="display:none;" class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input asp-for="NumCi" class="form-control" maxlength="15" placeholder="Carnet de Identidad" id="NumCiField" />
                 <label asp-for="NumCi">C.I. (Opcional)</label>
                 <span asp-validation-for="NumCi" class="text-danger"></span>
             </div>
         </div>
     </div>
-    
+
     <div id="campos-empleado" style="display:none;"> 
         <h5 class="mt-4">Datos Específicos del Empleado</h5>
         
@@ -88,14 +100,16 @@
             
             <div class="col-md-4 d-flex align-items-center">
                 <div class="form-check">
-                    <input asp-for="Mobilidad" class="form-check-input" type="checkbox" id="Mobilidad" />
+                    <input type="hidden" name="Mobilidad" value="false" />
+                    <input name="Mobilidad" id="Mobilidad" class="form-check-input" type="checkbox" value="true" />
                     <label class="form-check-label" for="Mobilidad">
                         Con Movilidad Propia
                     </label>
-                </div>
+                </div>          
             </div>
         </div>
     </div>
+
     <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="form-floating">
@@ -116,8 +130,8 @@
     <h5 class="mt-4">Dirección</h5>
     <div class="row g-3 mb-3">
         <div class="col-12">
-            <input type="hidden" asp-for="PersonaId" />
-            <input type="hidden" id="numDirecciones" />
+            <input type="hidden" asp-for="PersonaId" id="PersonaId" />
+            <input type="hidden" id="numDirecciones" value="0" />
             <table class="table table-bordered table-striped" id="tablaDirecciones">
                 <thead>
                     <tr>
@@ -128,19 +142,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    </tbody>
+                </tbody>
             </table>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#direccionesModal">Agregar Dirección</button>
         </div>
     </div>
 
+    <!-- Fila final: aquí colocamos el botón Agregar Dirección a la misma altura donde estaba Fecha -->
     <div class="row g-3 mb-3">
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input asp-for="Fecha_Nacimiento" class="form-control" type="date" placeholder="Fecha_Nacimiento" />
-                <label asp-for="Fecha_Nacimiento">Fecha de Nacimiento</label>
-                <span asp-validation-for="Fecha_Nacimiento" class="text-danger"></span>
-            </div>
+        <div class="col-md-6 d-flex align-items-center">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#direccionesModal">Agregar Dirección</button>
         </div>
         <div class="col-md-6 d-flex align-items-end justify-content-end">
             <button class="btn btn-success btn-lg" type="submit">Guardar Persona</button>
@@ -150,19 +160,44 @@
 
 <a asp-action="Index" class="btn btn-secondary mt-3">Volver a la Lista</a>
 
-
+<!-- Modal para Agregar Dirección -->
+<div class="modal fade" id="direccionesModal" tabindex="-1" aria-labelledby="direccionesModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="direccionesModalLabel">Agregar Dirección</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+            <div class="mb-3">
+                <label for="modalZona" class="form-label">Zona</label>
+                <input id="modalZona" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="modalCalle" class="form-label">Calle</label>
+                <input id="modalCalle" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="modalNumero" class="form-label">Número</label>
+                <input id="modalNumero" class="form-control" />
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="agregarDireccionDesdeModal()">Agregar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        // Ejemplo de JavaScript de inicio para deshabilitar el envío de formularios si hay campos no válidos
         (function () {
             'use strict';
             window.addEventListener('load', function () {
-                // Obtener todos los formularios a los que queremos aplicar estilos de validación de Bootstrap personalizados
                 var forms = document.querySelectorAll('.needs-validation');
-            
                 Array.prototype.slice.call(forms)
                     .forEach(function (form) {
                         form.addEventListener('submit', function (event) {
@@ -188,32 +223,90 @@
                         }, false);
                     });
             });
-        })(); 
-
+        })();
 
         function mostrarCamposPorTipo() {
-            // El valor de TipoPersona.Empleado es 3
-            const EMPLEADO_ID = "3"; 
-            
+            // Ajuste: usar valor numérico del enum. Reemplazar con el valor real de Empleado si cambia.
+            const EMPLEADO_ID = "3";
             let tipoId = document.getElementById("TipoSeleccionado").value;
             let camposEmpleado = document.getElementById("campos-empleado");
+            let ciBlock = document.getElementById("ci-block");
 
-            // Comparamos el valor seleccionado con el ID del Empleado
             if (tipoId === EMPLEADO_ID) {
-                camposEmpleado.style.display = "block"; // Mostrar campos si es Empleado
+                camposEmpleado.style.display = "block";
+                ciBlock.style.display = "block";
             } else {
-                camposEmpleado.style.display = "none"; // Ocultar campos en otro caso
+                camposEmpleado.style.display = "none";
+                ciBlock.style.display = "none";
+                // Limpiar CI si no es empleado
+                let ci = document.getElementById("NumCiField");
+                if (ci) ci.value = "";
             }
         }
 
-        // 1. Ejecutar al cargar la página para asegurar la visibilidad inicial
         document.addEventListener('DOMContentLoaded', (event) => {
-            mostrarCamposPorTipo(); 
+            mostrarCamposPorTipo();
+            // Si hay direcciones guardadas cargar (si usa endpoint)
+            // cargarDirecciones();
         });
-        
-        // 2. Función original para cargar direcciones (la mantengo aquí)
+
+        // --- Funciones para manejo cliente de direcciones ---
+        function agregarDireccionDesdeModal() {
+            const zona = document.getElementById('modalZona').value.trim();
+            const calle = document.getElementById('modalCalle').value.trim();
+            const numero = document.getElementById('modalNumero').value.trim();
+
+            if (!zona && !calle && !numero) {
+                Swal.fire('Aviso', 'Complete al menos un campo de la dirección.', 'warning');
+                return;
+            }
+
+            let index = parseInt(document.getElementById('numDirecciones').value || "0", 10);
+
+            // Crear fila visible
+            const tbody = document.querySelector('#tablaDirecciones tbody');
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+                <td>${escapeHtml(zona)}<input type="hidden" name="Direcciones[${index}].Zona" value="${escapeAttr(zona)}" /></td>
+                <td>${escapeHtml(calle)}<input type="hidden" name="Direcciones[${index}].Calle" value="${escapeAttr(calle)}" /></td>
+                <td>${escapeHtml(numero)}<input type="hidden" name="Direcciones[${index}].Numero" value="${escapeAttr(numero)}" /></td>
+                <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarDireccionRow(this)">Eliminar</button></td>
+            `;
+            tbody.appendChild(tr);
+
+            index++;
+            document.getElementById('numDirecciones').value = index;
+
+            // Limpiar modal y cerrar
+            document.getElementById('modalZona').value = '';
+            document.getElementById('modalCalle').value = '';
+            document.getElementById('modalNumero').value = '';
+            var modalEl = document.getElementById('direccionesModal');
+            var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.hide();
+        }
+
+        function eliminarDireccionRow(btn) {
+            const tr = btn.closest('tr');
+            if (!tr) return;
+            tr.remove();
+            // No reindexamos nombres ocultos para simplicidad; para binding perfecto habría que reindexar.
+        }
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+        function escapeAttr(s) {
+            if (!s) return '';
+            return s.replace(/"/g,'&quot;');
+        }
+
+        // Si mantiene endpoint de direcciones, conservar la función original
         function cargarDirecciones() {
             let personaId = $("#PersonaId").val();
+            if (!personaId) return;
             $.get("/Direcciones/Listar", { personaId }, function (data) {
                 let rows = "";
                 data.forEach(d => {

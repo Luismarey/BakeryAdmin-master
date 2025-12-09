@@ -40,7 +40,7 @@
                         <strong>Profesión:</strong> <br /> @empleado.Profesion
                     </div>
                     <div class="col-md-6">
-                        <strong>Movilidad:</strong> <br /> @(empleado.Mobilidad ? "Sí" : "No")
+                        <strong>Movilidad:</strong> <br /> @(empleado.Mobilidad == true ? "Sí" : "No")
                     </div>
                 </div>
 
@@ -98,4 +98,4 @@
         </a>
     </div>
 
-</div>
+    </div>

@@ -32,6 +32,9 @@ namespace BakeryAdmin.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MustChangePassword = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -276,6 +279,7 @@ namespace BakeryAdmin.Migrations
                     Numero = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NombreEdificio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Referencia = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Ubicacion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -426,11 +430,28 @@ namespace BakeryAdmin.Migrations
                 columns: new[] { "ProductoId", "Categoria", "Descripcion", "Disponible", "Fotografia", "Nombre", "Precio", "Unidad" },
                 values: new object[,]
                 {
-                    { 1, "Panader�a", "Pan fresco elaborado diariamente", true, "/img/pan-frances.jpg", "Pan Franc�s", 1.50m, "Unidad" },
-                    { 2, "Panader�a", "Cl�sica marraqueta crujiente", true, "/img/marraqueta.jpg", "Marraqueta", 1.00m, "Unidad" },
-                    { 3, "Pasteler�a", "Torta h�meda con cobertura de chocolate", true, "/img/torta-chocolate.jpg", "Torta de Chocolate", 35.00m, "Unidad" },
-                    { 4, "Pasteler�a", "Rollo suave con glaseado dulce", true, "/img/rollo-canela.jpg", "Rollo de Canela", 4.50m, "Unidad" },
-                    { 5, "Bebidas", "Caf� reci�n pasado", true, "/img/cafe-americano.jpg", "Caf� Americano", 5.00m, "Vaso" }
+                    { 1, "Panaderia", "Pan fresco elaborado diariamente", true, "/img/pan-frances.jpg", "Pan Frances", 1.50m, "Unidad" },
+                    { 2, "Panaderia", "Clasica marraqueta crujiente", true, "/img/marraqueta.jpg", "Marraqueta", 1.00m, "Unidad" },
+                    { 3, "Pasteleria", "Torta humeda con cobertura de chocolate", true, "/img/torta-chocolate.jpg", "Torta de Chocolate", 35.00m, "Unidad" },
+                    { 4, "Pasteleria", "Rollo suave con glaseado dulce", true, "/img/rollo-canela.jpg", "Rollo de Canela", 4.50m, "Unidad" },
+                    { 5, "Bebidas", "Cafe recien pasado", true, "/img/cafe-americano.jpg", "Cafe Americano", 5.00m, "Vaso" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Direcciones",
+                columns: new[] { "DireccionId", "Activo", "Calle", "NombreEdificio", "Numero", "PersonaId", "Referencia", "Ubicacion", "Zona" },
+                values: new object[,]
+                {
+                    { 1, true, "Chacra", "Edificio Sol", "123", 1, "Cerca del parque", "", "Centro" },
+                    { 2, true, "Las Flores", "Residencial Luna", "456", 2, "Frente a la plaza", "", "Norte" },
+                    { 3, true, "Av. Siempre Viva", "Condominio Estrella", "789", 3, "Al lado del supermercado", "", "Sur" },
+                    { 4, true, "Los Pinos", "Torre Cielo", "321", 4, "Detras de la iglesia", "", "Este" },
+                    { 5, true, "El Sol", "Villa Primavera", "654", 5, "Cerca de la escuela", "", "Oeste" },
+                    { 6, true, "Santa Cruz", "Residencial Arcoiris", "987", 6, "Frente al hospital", "", "Centro" },
+                    { 7, true, "Los Olivos", "Edificio Horizonte", "159", 7, "Al lado del banco", "", "Norte" },
+                    { 8, true, "El Cedro", "Condominio Mar", "753", 8, "Cerca del centro comercial", "", "Sur" },
+                    { 9, true, "La Paz", "La Radial", "852", 9, "Detras del parque", "", "Este" },
+                    { 10, true, "El Roble", "Villa Verde", "456", 10, "Frente a la plaza central", "", "Oeste" }
                 });
 
             migrationBuilder.InsertData(

@@ -6,6 +6,9 @@ namespace BakeryAdmin.Models
     public class PersonaBase 
     {
         // 1. ATRIBUTOS
+
+        //CLIENTE, EMPRESA
+        [Key]
         public int PersonaId { get; set; }
 
         [Required(ErrorMessage = "El nombre es Obligatorio.")]
@@ -30,6 +33,22 @@ namespace BakeryAdmin.Models
 
         public DateTime? Fecha_Nacimiento { get; set; }
 
+        //EMPLEADO
+
+        [StringLength(40, ErrorMessage = "No puede superar los 40 caracteres.")]
+        public string? Profesion { get; set; }
+
+        [StringLength(15, ErrorMessage = "No puede superar los 15 caracteres.")]
+        public string? Numero_Licencia { get; set; }
+
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Solo se permiten letras.")]
+        [StringLength(2, ErrorMessage = "Máximo 2 letras.")]
+        public string? Categoria_Licencia { get; set; }
+        public bool? Mobilidad { get; set; }
+
+        [StringLength(10, ErrorMessage = "No puede superar los 10 caracteres.")]
+        public string? Turno { get; set; }
+
         public TipoPersona TipoPersona { get; set; }
 
         public string? Username { get; set; }
@@ -49,8 +68,8 @@ namespace BakeryAdmin.Models
             this.NumCelular = numCelular;
         }
 
-        // Constructor sin parámetros requerido por Entity Framework Core 
-        protected PersonaBase()
+        //Constructor sin parámetros requerido por Entity Framework Core 
+        public PersonaBase()
         {
             Nombres = string.Empty;
             Apellidos = string.Empty;

@@ -112,7 +112,27 @@
 <div class="modal fade" id="modalItem" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <!-- Partial _EditItemModal se cargará aquí -->
+
+            @if (!User.IsInRole("Cliente"))
+            {
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="TotalDescuento" class="form-control" maxlength="15" placeholder="Total Descuento" readonly />
+                            <label asp-for="TotalDescuento">Total Descuento</label>
+                            <span asp-validation-for="TotalDescuento" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Total" class="form-control" maxlength="15" placeholder="Total" readonly />
+                            <label asp-for="Total">Total</label>
+                            <span asp-validation-for="Total" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            }
+           
         </div>
     </div>
 </div>
