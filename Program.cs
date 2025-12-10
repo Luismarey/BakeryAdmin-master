@@ -87,10 +87,10 @@ using (var scope = app.Services.CreateScope())
     //Panadero
     var panaderoEmail = "panadero@bakery.local";
     var panadero = await userMgr.FindByEmailAsync(panaderoEmail);
-    if (panadero == null) 
+    if (panadero == null)
     {
         panadero = new ApplicationUser { UserName = "panadero", Email = panaderoEmail, EmailConfirmed = true, NombreCompleto = "Usuario Panadero", MustChangePassword = false };
-        await userMgr.CreateAsync(panadero, "Panadero#123");
+        await userMgr.CreateAsync(panadero, "Panadero#1234");
         await userMgr.AddToRoleAsync(panadero, "Panadero");
     }
 
@@ -128,7 +128,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"); 
 
 if (app.Environment.IsDevelopment())
 {

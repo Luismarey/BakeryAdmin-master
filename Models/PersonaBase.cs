@@ -56,7 +56,8 @@ namespace BakeryAdmin.Models
         public bool Active { get; set; } = true;
 
 
-        // Relación con Dirección 
+        // Relación con Dirección - Coleccion solo lectura expuesta
+        //private readonly ICollection<Direccion> _direcciones = new List<Direccion>();
         public ICollection<Direccion> Direcciones { get; set; } = new List<Direccion>();
 
 

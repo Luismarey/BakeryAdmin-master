@@ -93,6 +93,7 @@
             const precioUnitario = productoForm.querySelector('[name="PrecioUnitario"]');
             const descuento = productoForm.querySelector('[name="Descuento"]');
             const subtotal = productoForm.querySelector('[name="Subtotal"]');
+            const productoSelect = productoForm.querySelector('[name="ProductoId"]');
 
             function calcularSubtotal() {
                 const cant = parseFloat(cantidad?.value) || 0;
@@ -105,12 +106,21 @@
                 }
             }
 
+            // Si el <option> trae data-price, asignarlo automáticamente al cambiar producto.
+            productoSelect?.addEventListener('change', function () {
+                const opt = productoSelect.options[productoSelect.selectedIndex];
+                if (opt && opt.dataset && opt.dataset.price) {
+                    precioUnitario.value = parseFloat(opt.dataset.price).toFixed(2);
+                }
+                calcularSubtotal();
+            });
+
             // Calcular subtotal cuando cambien los valores
             cantidad?.addEventListener('input', calcularSubtotal);
             precioUnitario?.addEventListener('input', calcularSubtotal);
             descuento?.addEventListener('input', calcularSubtotal);
 
-            // Calcular al cargar si hay valores
+            // Calcular al abrir modal si hay valores
             calcularSubtotal();
         }
     })();

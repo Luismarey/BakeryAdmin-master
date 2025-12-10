@@ -138,7 +138,6 @@ namespace BakeryAdmin.Controllers
             {
                 return View(model);
             }
-            //model.Total = model.Items?.Sum(i => i.PrecioUnitario * i.Cantidad) ?? 0;
             _db.Ordenes.Update(model);
             await _db.SaveChangesAsync();
             TempData["SuccessMessage"] = "El registro se guardo correctamente.";

@@ -59,24 +59,6 @@
                 <span asp-validation-for="Nota" class="text-danger"></span>
             </div>
         </div>
-        
-    </div>
-
-    <div class="row g-3 mb-3">
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input asp-for="TotalDescuento" class="form-control" maxlength="15" placeholder="Total Descuento" readonly />
-                <label asp-for="TotalDescuento">Total Descuento</label>
-                <span asp-validation-for="TotalDescuento" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input asp-for="Total" class="form-control" maxlength="15" placeholder="Total" readonly />
-                <label asp-for="Total">Total</label>
-                <span asp-validation-for="Total" class="text-danger"></span>
-            </div>
-        </div>
     </div>
 
     <!-- Lista de productos -->
@@ -84,6 +66,22 @@
         <label class="form-label">Productos asociados</label>
         <div id="listaProductos">
             <partial name="_ListaProductos" model="Model.Items" />
+        </div>
+    </div>
+
+    <!-- Totales (solo visuales, calculados por JS) -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="p-3 bg-white border rounded">
+                <div class="small text-muted">Total Descuento</div>
+                <div id="totalDescuento" class="fs-5">0.00</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-3 bg-white border rounded">
+                <div class="small text-muted">Total</div>
+                <div id="totalOrden" class="fs-5">0.00</div>
+            </div>
         </div>
     </div>
 
@@ -108,35 +106,6 @@
     @await Html.PartialAsync("_ProductosModal", new BakeryAdmin.Models.OrdenItem { OrdenId = Model.OrdenId })
 </div>
 
-<!-- Modal para editar Item -->
-<div class="modal fade" id="modalItem" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-
-            @if (!User.IsInRole("Cliente"))
-            {
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input asp-for="TotalDescuento" class="form-control" maxlength="15" placeholder="Total Descuento" readonly />
-                            <label asp-for="TotalDescuento">Total Descuento</label>
-                            <span asp-validation-for="TotalDescuento" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input asp-for="Total" class="form-control" maxlength="15" placeholder="Total" readonly />
-                            <label asp-for="Total">Total</label>
-                            <span asp-validation-for="Total" class="text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-            }
-           
-        </div>
-    </div>
-</div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
@@ -149,6 +118,47 @@
                 todayHighlight: true
             });
         });
+
+        // Recalcular totales totales de la orden leyendo la tabla de items
+        function findColumnIndex(table, headerText) {
+            let idx = -1;
+            table.find('thead th').each(function (i) {
+                if ($(this).text().trim().toLowerCase() === headerText.toLowerCase()) idx = i;
+            });
+            return idx;
+        }
+
+        function actualizarTotales() {
+            const cont = $('#listaProductos');
+            const table = cont.find('table').first();
+            if (!table || table.length === 0) {
+                $('#totalDescuento').text('0.00');
+                $('#totalOrden').text('0.00');
+                return;
+            }
+
+            const idxDesc = findColumnIndex(table, 'descuento');
+            const idxSub = findColumnIndex(table, 'subtotal');
+
+            let totalDesc = 0;
+            let total = 0;
+
+            table.find('tbody tr').each(function () {
+                const tds = $(this).find('td');
+                let desc = 0, sub = 0;
+                if (idxDesc >= 0) {
+                    desc = parseFloat((tds.eq(idxDesc).text() || '0').replace(/[^0-9\-\.,]/g, '').replace(',', '.')) || 0;
+                }
+                if (idxSub >= 0) {
+                    sub = parseFloat((tds.eq(idxSub).text() || '0').replace(/[^0-9\-\.,]/g, '').replace(',', '.')) || 0;
+                }
+                totalDesc += desc;
+                total += sub;
+            });
+
+            $('#totalDescuento').text(totalDesc.toFixed(2));
+            $('#totalOrden').text(total.toFixed(2));
+        }
 
         // Guardar la Orden principal
         $('#ordenForm').on('submit', function(e) {
@@ -192,6 +202,8 @@
                     var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
                     modal.hide();
                     $('#productoForm')[0].reset();
+                    // recalcular totales tras actualizar la lista
+                    actualizarTotales();
                 },
                 error: function(xhr) {
                     console.log(xhr.responseText);
@@ -200,39 +212,12 @@
             });
         });
 
-        // Editar Item (cargar partial en modal)
-        $(document).on('click', '.btn-edit', function() {
-            let id = $(this).data('id');
-            fetch(`/Ordenes/EditItem/${id}`)
-                .then(r => r.text())
-                .then(html => {
-                    $('#modalItem .modal-content').html(html);
-                    var modal = new bootstrap.Modal(document.getElementById('modalItem'));
-                    modal.show();
-                });
+        // Llamar actualizarTotales al cargar la vista y cuando se reciba un partial nuevo
+        $(document).ready(function () {
+            actualizarTotales();
         });
 
-        // Guardar Item editado
-        $(document).on('submit', '#editItemForm', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: '@Url.Action("EditarProducto", "Ordenes")',
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function(partialViewResult) {
-                    $('#listaProductos').html(partialViewResult);
-                    var modalEl = document.getElementById('modalItem');
-                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                    modal.hide();
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                    alert('Error al guardar el item editado.');
-                }
-            });
-        });
-
-        // Eliminar Item
+        // Resto de handlers (editar/eliminar) -> recalcular después de cambios
         $(document).on('click', '.btn-delete', function() {
             let id = $(this).data('id');
             let tr = $(this).closest('tr');
@@ -251,11 +236,33 @@
                         .then(res => {
                             if (res.success) {
                                 tr.remove();
+                                actualizarTotales();
                                 Swal.fire("Eliminado", "El item fue eliminado.", "success");
                             } else {
                                 Swal.fire("Error", res.message, "error");
                             }
                         });
+                }
+            });
+        });
+
+        // Después de editar producto con AJAX, asegura de llamar actualizarTotales() en success.
+        $(document).on('submit', '#editItemForm', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '@Url.Action("EditarProducto", "Ordenes")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(partialViewResult) {
+                    $('#listaProductos').html(partialViewResult);
+                    var modalEl = document.getElementById('modalItem');
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.hide();
+                    actualizarTotales();
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    alert('Error al guardar el item editado.');
                 }
             });
         });
